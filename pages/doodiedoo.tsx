@@ -1,7 +1,17 @@
 import { serviceAccountKey } from '../utils/db/service-account-key';
 
-function HomePage() {
-  return <pre>{JSON.stringify(serviceAccountKey)}</pre>;
+function HomePage({ sta }) {
+  return (
+    <div>
+      <div>
+        <pre>{JSON.stringify(sta)}</pre>
+      </div>
+    </div>
+  );
+}
+
+export function getStaticProps() {
+  return { props: { sta: serviceAccountKey } };
 }
 
 export default HomePage;

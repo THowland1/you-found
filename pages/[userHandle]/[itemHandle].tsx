@@ -1,4 +1,4 @@
-import styles from './[itemHandle].module.css';
+import styles from './[itemHandle].module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { faComments, faEnvelope } from '@fortawesome/free-regular-svg-icons';

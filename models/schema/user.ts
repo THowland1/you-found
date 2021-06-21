@@ -1,7 +1,18 @@
 import mongoose, { Schema } from 'mongoose';
-import { IMongooseDocument } from '../IMongooseDocument';
-import { IMongooseRef } from '../IMongooseRef';
-import { SchemaNames } from '../schema-names';
+import { IMongooseDocument } from '../mongoose/IMongooseDocument';
+import { IMongooseRef } from '../mongoose/IMongooseRef';
+import { SchemaNames } from '../mongoose/schema-names';
+
+export const userValidation = {
+  userFullName: {
+    minLength: 1,
+    maxLength: 50,
+  },
+  userHandle: {
+    minLength: 2,
+    maxLength: 20,
+  },
+};
 
 export interface IUserItem {
   itemName: string;
@@ -12,7 +23,7 @@ export interface IUser {
   userHandle: string;
   userEmailAddress: string;
   userFullName: string;
-  userPhoneNumber: string;
+  userPhoneNumber: string | null;
   userItems: IUserItem[];
 }
 
@@ -31,7 +42,7 @@ const UserSchema: Schema = new Schema({
   userHandle: { type: String, required: true },
   userEmailAddress: { type: String, required: true },
   userFullName: { type: String, required: true },
-  userPhoneNumber: { type: String, required: true },
+  userPhoneNumber: { type: String },
   userItems: [
     {
       itemName: { type: String, required: true },

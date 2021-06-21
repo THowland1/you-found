@@ -1,7 +1,22 @@
+:root {
+    --body-light: #F6F7F9;
+    --body-dark: #202427;
+    --card-light:  #fff;
+    --card-dark: #F6F7F9;
+    --font-light: #202427;
+    --font-dark: #F6F7F9;
+
+    --body: var(--body-dark);
+    --card: var(--card-light);
+    --font: var(--font-dark);
+    
+}
+
 html, body {
-    background-color:#F6F7F9;
+    background-color: var(--body);
     height: 100%;
     margin: 0;
+    color: var(--font);
 
     font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
 }

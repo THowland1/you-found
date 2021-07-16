@@ -1,75 +1,26 @@
-import styles from './create-user.module.scss';
-import axios, { AxiosError } from 'axios';
-
-import { TextField, Button, Snackbar } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import CreateItemsNames from 'components/create-items/01-names/names';
+import CreateItemsUser from 'components/create-items/02-user/user';
+import CreateItemsContactMethods from 'components/create-items/03-contact-methods/contact-methods';
+import CreateItemsPageDesigners from 'components/create-items/04-page-designers/page-designers';
+import { Form } from 'components/create-items/form';
+import { Step } from 'components/create-items/step';
 import React, { useState } from 'react';
-import { NewUserRequest } from '../../models/api/new-user-request';
 
-export default function CreateUserPage() {
-  const ddd = new NewUserRequest();
-  const [newUser, setNewUser] = useState(ddd);
-  const [error, setError] = useState<any>(null);
+// TODO Add ability to go back (and repopulate forms)
 
-  const submitUser = async () => {
-    try {
-      await axios.post('/api/create-user', newUser);
-    } catch (e) {
-      const error: AxiosError<any> = e;
-      if (error.isAxiosError) {
-        setError(error.response?.data.message);
-      }
-    }
-  };
-  return (
-    <>
-      <div className={styles['create-user-page']}>
-        <header className={styles.header}>Create a new account</header>
-        <div className={styles.content}>
-          <div className={styles.input}>
-            <TextField
-              defaultValue={newUser.userEmailAddress}
-              label='Email Address'
-              onChange={(e) =>
-                setNewUser({ ...newUser, userEmailAddress: e.target.value })
-              }
-            />
-          </div>
-          <div className={styles.input}>
-            <TextField
-              defaultValue={newUser.userFullName}
-              label='Full Name'
-              onChange={(e) =>
-                setNewUser({ ...newUser, userFullName: e.target.value })
-              }
-            />
-          </div>
-          <div className={styles.input}>
-            <TextField
-              defaultValue={newUser.userHandle}
-              label='Handle'
-              onChange={(e) =>
-                setNewUser({ ...newUser, userHandle: e.target.value })
-              }
-            />
-          </div>
-          <div className={styles.button}>
-            <Button variant='contained' color='primary' onClick={submitUser}>
-              Create account
-            </Button>
-          </div>
-        </div>
-      </div>
-      <Snackbar open={!!error} autoHideDuration={6000}>
-        <Alert
-          elevation={6}
-          variant='filled'
-          severity='error'
-          onClose={() => setError(null)}
-        >
-          {error}
-        </Alert>
-      </Snackbar>
-    </>
-  );
+export default function CreateItemPage() {
+  const [form, setForm] = useState(new Form());
+
+  switch (form.step) {
+    case Step.Names:
+      return <CreateItemsNames form={form} setForm={setForm} />;
+    case Step.User:
+      return <CreateItemsUser form={form} setForm={setForm} />;
+    case Step.ContactMethods:
+      return <CreateItemsContactMethods form={form} setForm={setForm} />;
+    case Step.PageDesigners:
+      return <CreateItemsPageDesigners form={form} setForm={setForm} />;
+    default:
+      return null;
+  }
 }

@@ -5,6 +5,8 @@ import { TextField, Button, Snackbar } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { useState } from 'react';
 import { NewUserRequest } from '../../models/api/new-user-request';
+import Image from 'next/image';
+import LogoPortrait from 'public/logo-landscape.svg';
 
 export default function CreateUserPage() {
   const ddd = new NewUserRequest();
@@ -58,6 +60,9 @@ export default function CreateUserPage() {
               Create account
             </Button>
           </div>
+        </div>
+        <div className={styles['logo-footer']}>
+          <LogoPortrait />
         </div>
       </div>
       <Snackbar open={!!error} autoHideDuration={6000}>

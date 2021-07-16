@@ -16,7 +16,9 @@ export const theme = createMuiTheme({
     },
     secondary: {
       main: '#19857b',
+      '100': '#19857b33',
     },
+
     error: {
       main: red.A400,
     },
@@ -27,5 +29,9 @@ export const theme = createMuiTheme({
       primary: '#202427',
       secondary: '#20242766',
     },
+  },
+  typography: {
+    fontFamily:
+      '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif',
   },
 });

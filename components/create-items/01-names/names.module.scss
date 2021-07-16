@@ -2,7 +2,7 @@
 @import 'styles/gradients';
 
 .create-user-page {
-  position: absolute;
+  position: relative;
   inset: 0;
 
   display: flex;
@@ -38,4 +38,21 @@
   color: #f00;
   background-color: #f001;
   white-space: normal;
+}
+
+.muted {
+  opacity: 0.3;
+}
+
+.logo-footer {
+  color: white;
+  position: absolute;
+  bottom: 0;
+  padding: 1rem;
+  transform: scale(0.7);
+  opacity: 0.5;
+
+  &:hover {
+    opacity: 1;
+  }
 }

@@ -13,7 +13,9 @@
     "@fortawesome/free-regular-svg-icons": "^5.15.3",
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@material-ui/core": "^4.11.4",
+    "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.58",
+    "@svgr/webpack": "^5.5.0",
     "aws4": "^1.11.0",
     "axios": "^0.21.1",
     "mongodb-client-encryption": "^1.2.4",
@@ -21,10 +23,12 @@
     "next": "^10.0.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
-    "sass": "^1.34.1"
+    "sass": "^1.34.1",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/react": "^17.0.9",
+    "@types/uuid": "^8.3.0",
     "typescript": "^4.3.2"
   }
 }

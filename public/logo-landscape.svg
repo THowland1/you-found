@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="122" height="32" viewBox="0 0 122 32">
+    <text id="youfound" transform="translate(39 20)" fill="currentColor" font-size="20" font-family="Lato-Regular, Lato"
+        letter-spacing="-0.008em">
+        <tspan x="0" y="0">youfound</tspan>
+    </text>
+    <g id="Ellipse_2" data-name="Ellipse 2" fill="none" stroke="#ea5455" stroke-width="4">
+        <circle cx="16" cy="16" r="16" stroke="none" />
+        <circle cx="16" cy="16" r="14" fill="none" />
+    </g>
+</svg>

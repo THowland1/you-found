@@ -3,4 +3,6 @@ export enum Step {
   User = '02-user',
   ContactMethods = '03-contact-methods',
   PageDesigners = '04-page-designers',
+  Confirm = '05-confirm',
+  Success = '06-success',
 }

@@ -1,7 +1,8 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Schema, Types } from 'mongoose';
 import { IMongooseDocument } from '../mongoose/IMongooseDocument';
 import { IMongooseRef } from '../mongoose/IMongooseRef';
 import { SchemaNames } from '../mongoose/schema-names';
+import { IItem, IItemDocument } from './item';
 
 export const userValidation = {
   userFullName: {
@@ -19,20 +20,30 @@ export interface IUserItem {
   itemHandle: string;
 }
 
+export interface IUserPhoneNumber {
+  phoneNumberId: Types.ObjectId;
+  phoneNumber: string;
+}
+
+export interface IUserEmailAddress {
+  emailAddressId: Types.ObjectId;
+  emailAddress: string;
+}
+
 export interface IUser {
   userHandle: string;
-  userEmailAddress: string;
+  userEmailAddresses: IUserEmailAddress[];
   userFullName: string;
-  userPhoneNumber: string | null;
-  userItems: IUserItem[];
+  userPhoneNumbers: IUserPhoneNumber[];
+  items: IMongooseRef<IItemDocument>[];
 }
 
 export const IUserProps: { [key in keyof IUser]: key } = {
   userHandle: 'userHandle',
-  userEmailAddress: 'userEmailAddress',
+  userEmailAddresses: 'userEmailAddresses',
   userFullName: 'userFullName',
-  userPhoneNumber: 'userPhoneNumber',
-  userItems: 'userItems',
+  userPhoneNumbers: 'userPhoneNumbers',
+  items: 'items',
 };
 
 export type IUserDocument = IMongooseDocument<IUser>;
@@ -40,15 +51,20 @@ export type IUserRef = IMongooseRef<IUserDocument>;
 
 const UserSchema: Schema = new Schema({
   userHandle: { type: String, required: true },
-  userEmailAddress: { type: String, required: true },
-  userFullName: { type: String, required: true },
-  userPhoneNumber: { type: String },
-  userItems: [
+  userEmailAddresses: [
     {
-      itemName: { type: String, required: true },
-      itemHandle: { type: String, required: true },
+      emailAddressId: { type: String, required: true },
+      emailAddress: { type: String, required: true },
     },
   ],
+  userFullName: { type: String, required: true },
+  userPhoneNumbers: [
+    {
+      phoneNumberId: { type: String, required: true },
+      phoneNumber: { type: String, required: true },
+    },
+  ],
+  items: [{ type: Schema.Types.ObjectId, ref: SchemaNames.ITEM }],
 });
 
 const getModel = () => {

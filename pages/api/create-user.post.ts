@@ -1,5 +1,6 @@
 import { NewUserRequest } from 'models/api/new-user-request';
 import { IUser, User } from 'models/schema/user';
+import { Types } from 'mongoose';
 import type { NextApiResponse } from 'next';
 import { ApiRequest } from 'utils/api/api-request';
 import { ValidationError } from 'utils/validation/validation-error';
@@ -13,10 +14,15 @@ export async function post(
     await validate(req);
     const newUser: IUser = {
       userHandle: req.body.userEmailAddress,
-      userEmailAddress: req.body.userEmailAddress,
+      userEmailAddresses: [
+        {
+          emailAddressId: new Types.ObjectId(),
+          emailAddress: req.body.userEmailAddress,
+        },
+      ],
       userFullName: req.body.userEmailAddress,
-      userPhoneNumber: null,
-      userItems: [],
+      userPhoneNumbers: [],
+      items: [],
     };
     await User.create(newUser);
     res.status(200).json({ message: 'Ayyy', body: req.body });

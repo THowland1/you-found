@@ -60,7 +60,7 @@ export default function CreateItemsPageDesigners({ form, setForm }: Params) {
   }
 
   function onSubmit() {
-    setForm({ ...form, step: Step.Names }); //////////////////////
+    setForm({ ...form, step: Step.Success }); //////////////////////
   }
 
   const currentItem = form['01-names'].items.find(

@@ -16,7 +16,7 @@ export class NewUserRequest implements INewUserRequest {
   constructor(data: INewUserRequest = defaultData) {
     copyProperties({ from: data, to: this });
   }
-  userEmailAddress: string;
-  userFullName: string;
-  userHandle: string;
+  userEmailAddress!: string;
+  userFullName!: string;
+  userHandle!: string;
 }

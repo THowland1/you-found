@@ -8,4 +8,6 @@ export enum ValidationErrorCode {
   CreateUser_FullName_TooLong = 'CreateUser_FullName_TooLong',
   GetItem_User_NotFound = 'GetItem_User_NotFound',
   GetItem_Item_NotFound = 'GetItem_Item_NotFound',
+  GetUserContactDetails_User_NotFound = 'GetUserContactDetails_User_NotFound',
+  UpdateUserContactDetails_User_NotFound = 'UpdateUserContactDetails_User_NotFound',
 }

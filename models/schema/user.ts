@@ -21,12 +21,12 @@ export interface IUserItem {
 }
 
 export interface IUserPhoneNumber {
-  phoneNumberId: Types.ObjectId;
+  phoneNumberId: string;
   phoneNumber: string;
 }
 
 export interface IUserEmailAddress {
-  emailAddressId: Types.ObjectId;
+  emailAddressId: string;
   emailAddress: string;
 }
 

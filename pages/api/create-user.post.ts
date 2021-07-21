@@ -2,12 +2,12 @@ import { NewUserRequest } from 'models/api/new-user-request';
 import { IUser, User } from 'models/schema/user';
 import { Types } from 'mongoose';
 import type { NextApiResponse } from 'next';
-import { ApiRequest } from 'utils/api/api-request';
+import { ApiPostRequest } from 'utils/api/api-request';
 import { ValidationError } from 'utils/validation/validation-error';
 import { validate } from './create-user.post.validate';
 
 export async function post(
-  req: ApiRequest<NewUserRequest>,
+  req: ApiPostRequest<NewUserRequest>,
   res: NextApiResponse
 ) {
   try {

@@ -1,13 +1,13 @@
 import { NewUserRequest } from 'models/api/new-user-request';
 import { User, userValidation } from 'models/schema/user';
 import type { NextApiResponse } from 'next';
-import { ApiRequest } from 'utils/api/api-request';
+import { ApiPostRequest } from 'utils/api/api-request';
 import { isValidEmail } from 'utils/is-valid-email';
 import { caseInsensitive } from 'utils/mongodb/case-insensitive';
 import { ValidationError } from 'utils/validation/validation-error';
 import { ValidationErrorCode } from 'utils/validation/validation-error-code';
 
-async function validateEmailAddress(req: ApiRequest<NewUserRequest>) {
+async function validateEmailAddress(req: ApiPostRequest<NewUserRequest>) {
   const emailAddress = req.body.userEmailAddress;
 
   const emailIsInvalid = !isValidEmail(emailAddress);
@@ -29,7 +29,7 @@ async function validateEmailAddress(req: ApiRequest<NewUserRequest>) {
   }
 }
 
-async function validateFullName(req: ApiRequest<NewUserRequest>) {
+async function validateFullName(req: ApiPostRequest<NewUserRequest>) {
   const fullName = req.body.userFullName;
 
   const fullNameIsTooShort =
@@ -51,7 +51,7 @@ async function validateFullName(req: ApiRequest<NewUserRequest>) {
   }
 }
 
-async function validateHandle(req: ApiRequest<NewUserRequest>) {
+async function validateHandle(req: ApiPostRequest<NewUserRequest>) {
   const handle = req.body.userHandle;
   const handleIsTooShort = handle.length < userValidation.userHandle.minLength;
   if (handleIsTooShort) {
@@ -80,7 +80,7 @@ async function validateHandle(req: ApiRequest<NewUserRequest>) {
   }
 }
 
-export async function validate(req: ApiRequest<NewUserRequest>) {
+export async function validate(req: ApiPostRequest<NewUserRequest>) {
   await validateEmailAddress(req);
   await validateFullName(req);
   await validateHandle(req);

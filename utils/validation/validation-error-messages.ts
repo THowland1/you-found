@@ -25,6 +25,11 @@ export const VALIDATION_ERROR_MESSAGES = {
     userFullName: string,
     itemHandle: string
   ) => `${userFullName} does not have an item with a handle of "${itemHandle}"`,
+  [ValidationErrorCode.GetUserContactDetails_User_NotFound]: (userId: string) =>
+    `Could not find a user with an ID of "${userId}"`,
+  [ValidationErrorCode.UpdateUserContactDetails_User_NotFound]: (
+    userId: string
+  ) => `Could not find a user with an ID of "${userId}"`,
 };
 
 compileTimeTypeCheck<EnumMap<ValidationErrorCode>>(VALIDATION_ERROR_MESSAGES);

@@ -1,11 +1,11 @@
 import connectDB from 'middleware/mongodb';
 import { INewItemsRequest } from 'models/api/new-items-request';
 import type { NextApiResponse } from 'next';
-import { ApiRequest } from 'utils/api/api-request';
+import { ApiPostRequest } from 'utils/api/api-request';
 import { post } from './create-items.post';
 
 export default async (
-  req: ApiRequest<INewItemsRequest>,
+  req: ApiPostRequest<INewItemsRequest>,
   res: NextApiResponse
 ) => {
   try {

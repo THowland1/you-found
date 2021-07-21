@@ -16,9 +16,10 @@ export const getUserAndItem = async (
     );
   }
   const { _id, __v, id, ...user } = userDocument.toObject();
-  const item = user.userItems.filter(
-    (userItem) => userItem.itemHandle === itemHandle
-  )[0];
+  // const item = user.userItems.filter(
+  //   (userItem) => userItem.itemHandle === itemHandle
+  // )[0];
 
-  return { user, item };
+  // return { user, item };
+  return { user: null as any, item: null as any };
 };

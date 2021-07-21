@@ -11,11 +11,16 @@ import {
 } from '@material-ui/core';
 import { Add as AddIcon, Remove as RemoveIcon } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
+import axios, { AxiosError } from 'axios';
+import { Api } from 'models/api';
+import { contactMethodsApiPath } from 'pages/api/[userId]/contact-methods';
 import LogoPortrait from 'public/logo-landscape.svg';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useStateArray } from 'utils/hooks/use-state-array';
 import { Step } from '../step';
 import { SubformParams } from '../subform-params';
+import { ContactMethodsApiClient } from './contact-methods-api-client';
+import { MapContactMethods } from './contact-methods-mappings';
 import {
   ContactMethodsSubform,
   EmailAddress,
@@ -28,11 +33,25 @@ type Params = SubformParams;
 export default function CreateItemsContactMethods({ form, setForm }: Params) {
   const [error, setError] = useState<any>(null);
   const [contactMethodsSubform, setContactMethodsSubform] = useState(
-    form['03-contact-methods']
+    form[Step.ContactMethods]
   );
+
+  const userId = form[Step.User].userId;
+  async function updateSubform() {
+    const responseBody = await ContactMethodsApiClient.get({ userId });
+    const newSubform = MapContactMethods.dtoToSubform(responseBody);
+    setEmailAddresses(newSubform.emailAddresses);
+    setPhoneNumbers(newSubform.phoneNumbers);
+    setSubformAndUpdateForm(newSubform);
+  }
+
+  useEffect(() => {
+    updateSubform();
+  }, []);
+
   function setSubformAndUpdateForm(value: ContactMethodsSubform) {
     setContactMethodsSubform(value);
-    setForm({ ...form, '03-contact-methods': value });
+    setForm({ ...form, [Step.ContactMethods]: value });
   }
 
   const [
@@ -40,17 +59,30 @@ export default function CreateItemsContactMethods({ form, setForm }: Params) {
     addEmailAddress,
     updateEmailAddress,
     removeEmailAddress,
+    setEmailAddresses,
   ] = useStateArray(contactMethodsSubform.emailAddresses, (value) =>
     setSubformAndUpdateForm({ ...contactMethodsSubform, emailAddresses: value })
   );
-  const [phoneNumbers, addPhoneNumber, updatePhoneNumber, removePhoneNumber] =
-    useStateArray(contactMethodsSubform.phoneNumbers, (value) =>
-      setSubformAndUpdateForm({ ...contactMethodsSubform, phoneNumbers: value })
-    );
+  const [
+    phoneNumbers,
+    addPhoneNumber,
+    updatePhoneNumber,
+    removePhoneNumber,
+    setPhoneNumbers,
+  ] = useStateArray(contactMethodsSubform.phoneNumbers, (value) =>
+    setSubformAndUpdateForm({ ...contactMethodsSubform, phoneNumbers: value })
+  );
 
   const onSubmit = async () => {
+    await saveContactMethods();
     setForm({ ...form, step: Step.PageDesigners });
   };
+
+  async function saveContactMethods() {
+    const subform = contactMethodsSubform;
+    const newContactMethods = MapContactMethods.subformToDto(subform);
+    await ContactMethodsApiClient.update({ userId }, newContactMethods);
+  }
 
   return (
     <>
@@ -78,7 +110,7 @@ export default function CreateItemsContactMethods({ form, setForm }: Params) {
             </ListItem>
             <ListItem>
               <TextField
-                defaultValue={contactMethodsSubform.fullName}
+                value={contactMethodsSubform.fullName}
                 label='Your name'
                 onChange={(e) =>
                   setSubformAndUpdateForm({
@@ -110,10 +142,10 @@ export default function CreateItemsContactMethods({ form, setForm }: Params) {
               </ListItemText>
             </ListItem>
             {contactMethodsSubform.emailAddresses.map((emailAddress, index) => (
-              <ListItem dense>
+              <ListItem dense key={emailAddress.emailAddressId}>
                 <ListItemText>
                   <TextField
-                    defaultValue={emailAddress.emailAddress}
+                    value={emailAddress.emailAddress}
                     fullWidth
                     size='small'
                     variant='outlined'
@@ -156,10 +188,10 @@ export default function CreateItemsContactMethods({ form, setForm }: Params) {
             </ListItem>
 
             {contactMethodsSubform.phoneNumbers.map((phoneNumber, index) => (
-              <ListItem>
+              <ListItem key={phoneNumber.phoneNumberId}>
                 <ListItemText>
                   <TextField
-                    defaultValue={phoneNumber.number}
+                    value={phoneNumber.number}
                     fullWidth
                     size='small'
                     variant='outlined'

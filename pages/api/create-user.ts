@@ -1,12 +1,12 @@
 import connectDB from 'middleware/mongodb';
 import { NewUserRequest } from 'models/api/new-user-request';
 import type { NextApiResponse } from 'next';
-import { ApiRequest } from 'utils/api/api-request';
+import { ApiPostRequest } from 'utils/api/api-request';
 import { ValidationError } from 'utils/validation/validation-error';
 import { post } from './create-user.post';
 
 export default async (
-  req: ApiRequest<NewUserRequest>,
+  req: ApiPostRequest<NewUserRequest>,
   res: NextApiResponse
 ) => {
   try {

@@ -18,7 +18,7 @@ import {
 import { IUser, User } from 'models/schema/user';
 import { Types } from 'mongoose';
 import type { NextApiResponse } from 'next';
-import { ApiRequest } from 'utils/api/api-request';
+import { ApiPostRequest } from 'utils/api/api-request';
 import { ValidationError } from 'utils/validation/validation-error';
 import { validate } from './create-items.post.validate';
 
@@ -60,7 +60,7 @@ function mapItemPage(itemPage: INewItemsRequestItemPage): IItemPage {
 }
 
 export async function post(
-  req: ApiRequest<INewItemsRequest>,
+  req: ApiPostRequest<INewItemsRequest>,
   res: NextApiResponse<INewItemsResponse>
 ) {
   try {

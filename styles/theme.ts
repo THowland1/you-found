@@ -9,7 +9,34 @@ import { red } from '@material-ui/core/colors';
 // --font-light: #202427;
 // --font-dark: #F6F7F9;
 
+const defaultTheme = createMuiTheme();
+
 export const theme = createMuiTheme({
+  overrides: {
+    MuiPaper: {
+      rounded: {
+        borderRadius: '1rem',
+      },
+    },
+    MuiCssBaseline: {
+      '@global': {
+        // MUI typography elements use REMs, so you can scale the global
+        // font size by setting the font-size on the <html> element.
+        html: {
+          fontSize: '62.5%',
+          [defaultTheme.breakpoints.up('sm')]: {
+            fontSize: '68.75%',
+          },
+          [defaultTheme.breakpoints.up('md')]: {
+            fontSize: '70%',
+          },
+          [defaultTheme.breakpoints.up('lg')]: {
+            fontSize: '75%',
+          },
+        },
+      },
+    },
+  },
   palette: {
     primary: {
       main: '#ea5455',

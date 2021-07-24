@@ -1,13 +1,13 @@
-import { Api } from 'models/api';
+import * as ApiModels from 'models/api';
 import { NextApiResponse } from 'next';
 import { ApiGetRequest, ApiPutRequest } from 'utils/api/api-request';
 import connectDB from '../../../middleware/mongodb';
 import { get } from './contact-methods.get';
 import { put } from './contact-methods.put';
 
-type IRouteParams = Api.ContactMethods.IRouteParams;
-type IGetResponse = Api.ContactMethods.Get.IResponse;
-type IUpdateRequest = Api.ContactMethods.Update.IRequest;
+type IRouteParams = ApiModels.ContactMethods.IRouteParams;
+type IGetResponse = ApiModels.ContactMethods.Get.IResponse;
+type IUpdateRequest = ApiModels.ContactMethods.Update.IRequest;
 
 const CONTACT_METHODS_PATH = '/api/[userId]/contact-methods';
 export function contactMethodsApiPath(params: IRouteParams) {

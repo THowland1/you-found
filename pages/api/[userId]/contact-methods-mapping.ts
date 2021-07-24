@@ -1,4 +1,4 @@
-import { Api } from 'models/api';
+import * as ApiModels from 'models/api';
 import {
   IUserDocument,
   IUserEmailAddress,
@@ -7,7 +7,7 @@ import {
 import { Types } from 'mongoose';
 
 export namespace MapContactMethods {
-  type Dto = Api.ContactMethods.Get.IResponse;
+  type Dto = ApiModels.ContactMethods.Get.IResponse;
   type Entity = IUserDocument;
 
   export function dtoToPartialEntity(contactMethods: Dto): Partial<Entity> {
@@ -36,7 +36,7 @@ export namespace MapContactMethods {
 }
 
 export namespace MapEmailAddress {
-  type Dto = Api.ContactMethods.Get.IResponseEmailAddress;
+  type Dto = ApiModels.ContactMethods.Get.IResponseEmailAddress;
   type Entity = IUserEmailAddress;
   export function dtoToEntity(emailAddress: Dto): Entity {
     return {
@@ -53,7 +53,7 @@ export namespace MapEmailAddress {
 }
 
 export namespace MapPhoneNumber {
-  type Dto = Api.ContactMethods.Get.IResponsePhoneNumber;
+  type Dto = ApiModels.ContactMethods.Get.IResponsePhoneNumber;
   type Entity = IUserPhoneNumber;
 
   export function dtoToEntity(phoneNumber: Dto): Entity {

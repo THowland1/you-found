@@ -3,6 +3,7 @@ import {
   InputAdornment,
   List,
   ListItem,
+  Paper,
   Snackbar,
   Tab,
   Tabs,
@@ -11,10 +12,13 @@ import {
 } from '@material-ui/core';
 import { Lock, Mail } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
+import axios, { AxiosError } from 'axios';
+import { LogIn } from 'models/api';
 import LogoPortrait from 'public/logo-landscape.svg';
 import React, { useState } from 'react';
 import { Step } from '../step';
 import { SubformParams } from '../subform-params';
+import { UserApiClient } from './user-api-client';
 import { NewOrExisting, UserSubform } from './user-subform';
 import styles from './user.module.scss';
 
@@ -29,6 +33,13 @@ export default function CreateItemsUser({ form, setForm }: Params) {
   }
 
   const onSubmit = async () => {
+    try {
+      await UserApiClient.logIn({emailAddress: '', password: ''}, e => setError(e.))
+    } catch (error) {
+      
+    }
+    setError('sddddddddddddd');
+    return;
     setForm({ ...form, step: Step.ContactMethods });
   };
 
@@ -48,7 +59,7 @@ export default function CreateItemsUser({ form, setForm }: Params) {
             Who are you?
           </Typography>
         </header>
-        <div className={styles.content}>
+        <Paper>
           {/* <pre>{JSON.stringify(form, null, 4).replace(/["{[,\}\]]/g, '')}</pre> */}
           <Tabs
             value={userSubform.newOrExisting}
@@ -116,24 +127,35 @@ export default function CreateItemsUser({ form, setForm }: Params) {
                 }}
               />
             </ListItem>
-          </List>
-
-          <div className={styles.button}>
-            <Button
-              fullWidth={true}
-              variant='contained'
-              color='secondary'
-              onClick={(_) => onSubmit()}
-            >
-              {
+            <ListItem>
+              <Button
+                fullWidth={true}
+                variant='contained'
+                color='secondary'
+                onClick={(_) => onSubmit()}
+              >
                 {
-                  [NewOrExisting.New]: 'Continue with email',
-                  [NewOrExisting.Existing]: 'Sign up with email',
-                }[userSubform.newOrExisting]
-              }
-            </Button>
-          </div>
-        </div>
+                  {
+                    [NewOrExisting.New]: 'Continue with email',
+                    [NewOrExisting.Existing]: 'Sign up with email',
+                  }[userSubform.newOrExisting]
+                }
+              </Button>
+            </ListItem>
+            {!!error ? (
+              <ListItem>
+                <Alert
+                  style={{ width: '100%' }}
+                  severity='error'
+                  onClose={() => setError(null)}
+                >
+                  <Typography variant='body1'></Typography>
+                  {error}
+                </Alert>
+              </ListItem>
+            ) : null}
+          </List>
+        </Paper>
         <div className={styles['logo-footer']}>
           <LogoPortrait />
         </div>

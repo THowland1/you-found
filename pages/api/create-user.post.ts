@@ -14,12 +14,7 @@ export async function post(
     await validate(req);
     const newUser: IUser = {
       userHandle: req.body.userEmailAddress,
-      userEmailAddresses: [
-        {
-          emailAddressId: new Types.ObjectId(),
-          emailAddress: req.body.userEmailAddress,
-        },
-      ],
+      userEmailAddresses: [],
       userFullName: req.body.userEmailAddress,
       userPhoneNumbers: [],
       items: [],

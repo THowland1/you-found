@@ -1,11 +1,11 @@
 import axios, { AxiosError } from 'axios';
-import { Api } from 'models/api';
+import * as ApiModels from 'models/api';
 import { contactMethodsApiPath } from 'pages/api/[userId]/contact-methods';
 
 export module ContactMethodsApiClient {
-  type IRouteParams = Api.ContactMethods.IRouteParams;
-  type IGetResponse = Api.ContactMethods.Get.IResponse;
-  type IUpdateRequest = Api.ContactMethods.Update.IRequest;
+  type IRouteParams = ApiModels.ContactMethods.IRouteParams;
+  type IGetResponse = ApiModels.ContactMethods.Get.IResponse;
+  type IUpdateRequest = ApiModels.ContactMethods.Update.IRequest;
 
   export async function get(
     routeParams: IRouteParams,

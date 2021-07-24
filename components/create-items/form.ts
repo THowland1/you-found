@@ -12,7 +12,7 @@ export class Form {
    *
    */
   constructor() {
-    this.step = Step.ContactMethods;
+    this.step = Step.User;
     this[Step.Names] = {
       items: [
         {

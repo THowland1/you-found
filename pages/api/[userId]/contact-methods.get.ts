@@ -1,18 +1,13 @@
-import { Api } from 'models/api';
-import {
-  IUserDocument,
-  IUserEmailAddress,
-  IUserPhoneNumber,
-  User,
-} from 'models/schema/user';
+import * as ApiModels from 'models/api';
+import { User } from 'models/schema/user';
 import type { NextApiResponse } from 'next';
 import { ApiGetRequest } from 'utils/api/api-request';
 import { ValidationError } from 'utils/validation/validation-error';
 import { ValidationErrorCode } from 'utils/validation/validation-error-code';
 import * as Maps from './contact-methods-mapping';
 
-type IRouteParams = Api.ContactMethods.IRouteParams;
-type IResponse = Api.ContactMethods.Get.IResponse;
+type IRouteParams = ApiModels.ContactMethods.IRouteParams;
+type IResponse = ApiModels.ContactMethods.Get.IResponse;
 
 export async function get(
   req: ApiGetRequest<IRouteParams>,

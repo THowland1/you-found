@@ -1,4 +1,4 @@
-import { Api } from 'models/api';
+import * as ApiModels from 'models/api';
 import {
   ContactMethodsSubform,
   EmailAddress,
@@ -6,7 +6,7 @@ import {
 } from './contact-methods-subform';
 
 export module MapContactMethods {
-  type Dto = Api.ContactMethods.Get.IResponse;
+  type Dto = ApiModels.ContactMethods.Get.IResponse;
   type Subform = ContactMethodsSubform;
 
   export function dtoToSubform(contactMethods: Dto): Subform {
@@ -35,7 +35,7 @@ export module MapContactMethods {
 }
 
 export module MapPhoneNumber {
-  type Dto = Api.ContactMethods.Get.IResponsePhoneNumber;
+  type Dto = ApiModels.ContactMethods.Get.IResponsePhoneNumber;
   type Subform = PhoneNumber;
 
   export function dtoToSubform(phoneNumber: Dto): Subform {
@@ -54,7 +54,7 @@ export module MapPhoneNumber {
 }
 
 export module MapEmailAddress {
-  type Dto = Api.ContactMethods.Get.IResponseEmailAddress;
+  type Dto = ApiModels.ContactMethods.Get.IResponseEmailAddress;
   type Subform = EmailAddress;
 
   export function dtoToSubform(emailAddress: Dto): Subform {

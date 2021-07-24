@@ -1,4 +1,4 @@
-import { Api } from 'models/api';
+import * as ApiModels from 'models/api';
 import { IUserEmailAddress, IUserPhoneNumber, User } from 'models/schema/user';
 import { Types } from 'mongoose';
 import type { NextApiResponse } from 'next';
@@ -12,8 +12,8 @@ import {
 } from './contact-methods-mapping';
 import { validate } from './contact-methods.put.validate';
 
-type IRouteParams = Api.ContactMethods.IRouteParams;
-type IRequest = Api.ContactMethods.Update.IRequest;
+type IRouteParams = ApiModels.ContactMethods.IRouteParams;
+type IRequest = ApiModels.ContactMethods.Update.IRequest;
 
 export async function put(
   req: ApiPutRequest<IRequest, IRouteParams>,

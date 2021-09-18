@@ -7,7 +7,7 @@ import {
   ListItemText,
   Snackbar,
   TextField,
-  Typography,
+  Typography
 } from '@material-ui/core';
 import { Add as AddIcon, Remove as RemoveIcon } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
@@ -31,7 +31,7 @@ export default function CreateItemsNames({ form, setForm }: Params) {
 
   const [items, addItem, updateItem, removeItem] = useStateArray(
     form['01-names'].items,
-    (value) => setSubformAndUpdateForm({ ...namesSubform, items: value })
+    value => setSubformAndUpdateForm({ ...namesSubform, items: value })
   );
 
   const submitItems = async () => {
@@ -43,13 +43,13 @@ export default function CreateItemsNames({ form, setForm }: Params) {
         <header className={styles.header}>
           <Typography
             className={styles.muted}
-            variant='h6'
-            align='center'
-            component='h1'
+            variant="h6"
+            align="center"
+            component="h1"
           >
             Create QR codes
           </Typography>
-          <Typography variant='h4' component='h2' align='center'>
+          <Typography variant="h4" component="h2" align="center">
             What items do you want codes for?
           </Typography>
         </header>
@@ -63,19 +63,19 @@ export default function CreateItemsNames({ form, setForm }: Params) {
                     defaultValue={item.name}
                     label={`Item ${index + 1}`}
                     fullWidth
-                    variant='outlined'
+                    variant="outlined"
                     placeholder={item.placeholder}
-                    onChange={(e) =>
+                    onChange={e =>
                       updateItem(index, { ...item, name: e.target.value })
                     }
                     InputLabelProps={{
-                      shrink: true,
+                      shrink: true
                     }}
                   />
                 </ListItemText>
-                <ListItemSecondaryAction onClick={(_) => removeItem(index)}>
+                <ListItemSecondaryAction onClick={_ => removeItem(index)}>
                   {index > 0 ? (
-                    <IconButton edge='end' aria-label='remove item'>
+                    <IconButton edge="end" aria-label="remove item">
                       <RemoveIcon />
                     </IconButton>
                   ) : null}
@@ -86,9 +86,9 @@ export default function CreateItemsNames({ form, setForm }: Params) {
               <ListItemText></ListItemText>
               <ListItemSecondaryAction>
                 <IconButton
-                  onClick={(_) => addItem(new Item())}
-                  edge='end'
-                  aria-label='add item'
+                  onClick={_ => addItem(new Item())}
+                  edge="end"
+                  aria-label="add item"
                 >
                   <AddIcon />
                 </IconButton>
@@ -96,20 +96,17 @@ export default function CreateItemsNames({ form, setForm }: Params) {
             </ListItem>
           </List>
           <div className={styles.button}>
-            <Button variant='contained' color='primary' onClick={submitItems}>
-              Create account
+            <Button variant="contained" color="secondary" onClick={submitItems}>
+              Continue
             </Button>
           </div>
-        </div>
-        <div className={styles['logo-footer']}>
-          <LogoPortrait />
         </div>
       </div>
       <Snackbar open={!!error} autoHideDuration={6000}>
         <Alert
           elevation={6}
-          variant='filled'
-          severity='error'
+          variant="filled"
+          severity="error"
           onClose={() => setError(null)}
         >
           {error}

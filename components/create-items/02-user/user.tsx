@@ -8,19 +8,24 @@ import {
   Tab,
   Tabs,
   TextField,
-  Typography,
+  Typography
 } from '@material-ui/core';
 import { Lock, Mail } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import axios, { AxiosError } from 'axios';
 import { LogIn } from 'models/api';
-import LogoPortrait from 'public/logo-landscape.svg';
 import React, { useState } from 'react';
 import { Step } from '../step';
 import { SubformParams } from '../subform-params';
 import { UserApiClient } from './user-api-client';
 import { NewOrExisting, UserSubform } from './user-subform';
 import styles from './user.module.scss';
+import firebase from 'firebase/app';
+import useFirebase from 'utils/hooks/useFirebase';
+import {
+  IAuthenticationResult,
+  useAuthService
+} from '../../../utils/hooks/useAuthService';
 
 type Params = SubformParams;
 
@@ -33,15 +38,50 @@ export default function CreateItemsUser({ form, setForm }: Params) {
   }
 
   const onSubmit = async () => {
-    try {
-      await UserApiClient.logIn({emailAddress: '', password: ''}, e => setError(e.))
-    } catch (error) {
-      
-    }
-    setError('sddddddddddddd');
-    return;
     setForm({ ...form, step: Step.ContactMethods });
   };
+
+  const authService = useAuthService();
+  const loginOrRegisterWithCredentials = authService.loginWithCredentials;
+
+  async function loginOrRegisterWithFacebookPopup() {
+    const result = await authService.loginOrRegisterWithFacebookPopup();
+    authenticateAndSubmit(result);
+  }
+
+  async function loginOrRegisterWithGooglePopup() {
+    const result = await authService.loginOrRegisterWithGooglePopup();
+    authenticateAndSubmit(result);
+  }
+
+  async function loginWithCredentials() {
+    const result = await authService.loginWithCredentials(userSubform);
+    authenticateAndSubmit(result);
+  }
+
+  async function registerWithCredentials() {
+    const result = await authService.registerWithCredentials(userSubform);
+    authenticateAndSubmit(result);
+  }
+
+  function goBack() {
+    setForm({ ...form, step: Step.Names });
+  }
+
+  async function authenticateAndSubmit(result: IAuthenticationResult) {
+    if (result.success) {
+      const { userCredential } = result;
+      setSubformAndUpdateForm({
+        ...userSubform,
+        userId: userCredential.user?.uid || '',
+        emailAddress: userCredential.user?.email || ''
+      });
+      onSubmit();
+    } else {
+      const { error } = result;
+      setError(error.message);
+    }
+  }
 
   return (
     <>
@@ -49,13 +89,13 @@ export default function CreateItemsUser({ form, setForm }: Params) {
         <header className={styles.header}>
           <Typography
             className={styles.muted}
-            variant='h6'
-            align='center'
-            component='h1'
+            variant="h6"
+            align="center"
+            component="h1"
           >
             Create QR codes
           </Typography>
-          <Typography variant='h4' component='h2' align='center'>
+          <Typography variant="h4" component="h2" align="center">
             Who are you?
           </Typography>
         </header>
@@ -66,105 +106,152 @@ export default function CreateItemsUser({ form, setForm }: Params) {
             onChange={(_, value) =>
               setSubformAndUpdateForm({ ...userSubform, newOrExisting: value })
             }
-            indicatorColor='primary'
-            textColor='primary'
-            variant='fullWidth'
-            aria-label='full width tabs example'
+            indicatorColor="primary"
+            textColor="primary"
+            variant="fullWidth"
+            aria-label="full width tabs example"
           >
             <Tab label="I'm new" value={NewOrExisting.New} />
-            <Tab label='I have an account' value={NewOrExisting.Existing} />
+            <Tab label="I have an account" value={NewOrExisting.Existing} />
           </Tabs>
 
           <List>
             <ListItem>
               <TextField
                 defaultValue={userSubform.emailAddress}
-                label='Email Address'
-                placeholder='Email Address'
-                onChange={(e) =>
+                label="Email Address"
+                placeholder="Email Address"
+                onChange={e =>
                   setSubformAndUpdateForm({
                     ...userSubform,
-                    emailAddress: e.target.value,
+                    emailAddress: e.target.value
                   })
                 }
                 fullWidth
-                variant='outlined'
+                variant="outlined"
                 InputLabelProps={{
-                  shrink: true,
+                  shrink: true
                 }}
                 InputProps={{
                   startAdornment: (
-                    <InputAdornment position='start'>
+                    <InputAdornment position="start">
                       <Mail />
                     </InputAdornment>
-                  ),
+                  )
                 }}
               />
             </ListItem>
             <ListItem>
               <TextField
                 defaultValue={userSubform.password}
-                label='Password'
-                placeholder='Password'
-                type='password'
-                onChange={(e) =>
+                label="Password"
+                placeholder="Password"
+                type="password"
+                onChange={e =>
                   setSubformAndUpdateForm({
                     ...userSubform,
-                    password: e.target.value,
+                    password: e.target.value
                   })
                 }
                 fullWidth
-                variant='outlined'
+                variant="outlined"
                 InputLabelProps={{
-                  shrink: true,
+                  shrink: true
                 }}
                 InputProps={{
                   startAdornment: (
-                    <InputAdornment position='start'>
+                    <InputAdornment position="start">
                       <Lock />
                     </InputAdornment>
-                  ),
+                  )
                 }}
               />
             </ListItem>
             <ListItem>
               <Button
                 fullWidth={true}
-                variant='contained'
-                color='secondary'
-                onClick={(_) => onSubmit()}
+                variant="contained"
+                color="secondary"
+                onClick={
+                  {
+                    [NewOrExisting.New]: registerWithCredentials,
+                    [NewOrExisting.Existing]: loginWithCredentials
+                  }[userSubform.newOrExisting]
+                }
               >
                 {
                   {
-                    [NewOrExisting.New]: 'Continue with email',
-                    [NewOrExisting.Existing]: 'Sign up with email',
+                    [NewOrExisting.New]: 'Sign up with email',
+                    [NewOrExisting.Existing]: 'Continue with email'
                   }[userSubform.newOrExisting]
                 }
               </Button>
             </ListItem>
+            <ListItem>
+              <Typography
+                className={styles.muted}
+                align="center"
+                variant="body2"
+              >
+                Or
+              </Typography>
+            </ListItem>
+            <ListItem>
+              <Button
+                fullWidth={true}
+                variant="contained"
+                color="secondary"
+                onClick={loginOrRegisterWithFacebookPopup}
+              >
+                {
+                  {
+                    [NewOrExisting.New]: 'Sign up with Facebook',
+                    [NewOrExisting.Existing]: 'Continue with Facebook'
+                  }[userSubform.newOrExisting]
+                }
+              </Button>
+            </ListItem>
+            <ListItem>
+              <Button
+                fullWidth={true}
+                variant="contained"
+                color="secondary"
+                onClick={loginOrRegisterWithGooglePopup}
+              >
+                {
+                  {
+                    [NewOrExisting.New]: 'Sign up with Google',
+                    [NewOrExisting.Existing]: 'Continue with Google'
+                  }[userSubform.newOrExisting]
+                }
+              </Button>
+            </ListItem>
+            <ListItem>
+              <Button fullWidth={true} variant="text" onClick={goBack}>
+                Go back
+              </Button>
+            </ListItem>
+            <ListItem></ListItem>
             {!!error ? (
               <ListItem>
                 <Alert
                   style={{ width: '100%' }}
-                  severity='error'
+                  severity="error"
                   onClose={() => setError(null)}
                 >
-                  <Typography variant='body1'></Typography>
+                  <Typography variant="body1"></Typography>
                   {error}
                 </Alert>
               </ListItem>
             ) : null}
           </List>
         </Paper>
-        <div className={styles['logo-footer']}>
-          <LogoPortrait />
-        </div>
       </div>
       <Snackbar open={!!error} autoHideDuration={6000}>
         <Alert
           elevation={6}
-          variant='filled'
-          severity='error'
+          variant="filled"
+          severity="error"
           onClose={() => setError(null)}
         >
           {error}

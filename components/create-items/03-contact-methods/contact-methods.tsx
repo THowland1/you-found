@@ -8,6 +8,7 @@ import {
   Snackbar,
   TextField,
   Typography,
+  Paper
 } from '@material-ui/core';
 import { Add as AddIcon, Remove as RemoveIcon } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
@@ -24,7 +25,7 @@ import { MapContactMethods } from './contact-methods-mappings';
 import {
   ContactMethodsSubform,
   EmailAddress,
-  PhoneNumber,
+  PhoneNumber
 } from './contact-methods-subform';
 import styles from './contact-methods.module.scss';
 
@@ -59,8 +60,8 @@ export default function CreateItemsContactMethods({ form, setForm }: Params) {
     addEmailAddress,
     updateEmailAddress,
     removeEmailAddress,
-    setEmailAddresses,
-  ] = useStateArray(contactMethodsSubform.emailAddresses, (value) =>
+    setEmailAddresses
+  ] = useStateArray(contactMethodsSubform.emailAddresses, value =>
     setSubformAndUpdateForm({ ...contactMethodsSubform, emailAddresses: value })
   );
   const [
@@ -68,8 +69,8 @@ export default function CreateItemsContactMethods({ form, setForm }: Params) {
     addPhoneNumber,
     updatePhoneNumber,
     removePhoneNumber,
-    setPhoneNumbers,
-  ] = useStateArray(contactMethodsSubform.phoneNumbers, (value) =>
+    setPhoneNumbers
+  ] = useStateArray(contactMethodsSubform.phoneNumbers, value =>
     setSubformAndUpdateForm({ ...contactMethodsSubform, phoneNumbers: value })
   );
 
@@ -90,40 +91,40 @@ export default function CreateItemsContactMethods({ form, setForm }: Params) {
         <header className={styles.header}>
           <Typography
             className={styles.muted}
-            variant='h6'
-            align='center'
-            component='h1'
+            variant="h6"
+            align="center"
+            component="h1"
           >
             Create QR codes
           </Typography>
-          <Typography variant='h4' component='h2' align='center'>
+          <Typography variant="h4" component="h2" align="center">
             How can people get in touch with you?
           </Typography>
         </header>
-        <div className={styles.content}>
+        <Paper className={styles.content}>
           {/* <pre>{JSON.stringify(form, null, 4).replace(/["{[,\}\]]/g, '')}</pre> */}
           <List>
             <ListItem>
-              <Typography variant='h6' component='h3'>
+              <Typography variant="h6" component="h3">
                 Your name
               </Typography>
             </ListItem>
             <ListItem>
               <TextField
                 value={contactMethodsSubform.fullName}
-                label='Your name'
-                onChange={(e) =>
+                label="Your name"
+                onChange={e =>
                   setSubformAndUpdateForm({
                     ...contactMethodsSubform,
-                    fullName: e.target.value,
+                    fullName: e.target.value
                   })
                 }
                 fullWidth
-                variant='outlined'
+                variant="outlined"
               />
             </ListItem>
             <ListItem>
-              <Typography variant='h6' component='h3'>
+              <Typography variant="h6" component="h3">
                 Email addresses
               </Typography>
             </ListItem>
@@ -132,11 +133,11 @@ export default function CreateItemsContactMethods({ form, setForm }: Params) {
                 <TextField
                   disabled
                   fullWidth
-                  size='small'
-                  variant='outlined'
+                  size="small"
+                  variant="outlined"
                   value={form['02-user'].emailAddress}
                   InputLabelProps={{
-                    shrink: true,
+                    shrink: true
                   }}
                 />
               </ListItemText>
@@ -147,23 +148,23 @@ export default function CreateItemsContactMethods({ form, setForm }: Params) {
                   <TextField
                     value={emailAddress.emailAddress}
                     fullWidth
-                    size='small'
-                    variant='outlined'
-                    onChange={(e) =>
+                    size="small"
+                    variant="outlined"
+                    onChange={e =>
                       updateEmailAddress(index, {
                         ...emailAddress,
-                        emailAddress: e.target.value,
+                        emailAddress: e.target.value
                       })
                     }
                     InputLabelProps={{
-                      shrink: true,
+                      shrink: true
                     }}
                   />
                 </ListItemText>
                 <ListItemSecondaryAction
-                  onClick={(_) => removeEmailAddress(index)}
+                  onClick={_ => removeEmailAddress(index)}
                 >
-                  <IconButton edge='end' aria-label='remove item'>
+                  <IconButton edge="end" aria-label="remove item">
                     <RemoveIcon />
                   </IconButton>
                 </ListItemSecondaryAction>
@@ -173,8 +174,8 @@ export default function CreateItemsContactMethods({ form, setForm }: Params) {
             <ListItem>
               <Button
                 fullWidth={true}
-                color='secondary'
-                onClick={(_) => addEmailAddress(new EmailAddress())}
+                color="secondary"
+                onClick={_ => addEmailAddress(new EmailAddress())}
                 startIcon={<AddIcon />}
               >
                 Add email address
@@ -182,7 +183,7 @@ export default function CreateItemsContactMethods({ form, setForm }: Params) {
             </ListItem>
 
             <ListItem>
-              <Typography variant='h6' component='h3'>
+              <Typography variant="h6" component="h3">
                 Phone numbers
               </Typography>
             </ListItem>
@@ -193,23 +194,23 @@ export default function CreateItemsContactMethods({ form, setForm }: Params) {
                   <TextField
                     value={phoneNumber.number}
                     fullWidth
-                    size='small'
-                    variant='outlined'
-                    onChange={(e) =>
+                    size="small"
+                    variant="outlined"
+                    onChange={e =>
                       updatePhoneNumber(index, {
                         ...phoneNumber,
-                        number: e.target.value,
+                        number: e.target.value
                       })
                     }
                     InputLabelProps={{
-                      shrink: true,
+                      shrink: true
                     }}
                   />
                 </ListItemText>
                 <ListItemSecondaryAction
-                  onClick={(_) => removePhoneNumber(index)}
+                  onClick={_ => removePhoneNumber(index)}
                 >
-                  <IconButton edge='end' aria-label='remove item'>
+                  <IconButton edge="end" aria-label="remove item">
                     <RemoveIcon />
                   </IconButton>
                 </ListItemSecondaryAction>
@@ -219,8 +220,8 @@ export default function CreateItemsContactMethods({ form, setForm }: Params) {
             <ListItem>
               <Button
                 fullWidth={true}
-                color='secondary'
-                onClick={(_) => addPhoneNumber(new PhoneNumber())}
+                color="secondary"
+                onClick={_ => addPhoneNumber(new PhoneNumber())}
                 startIcon={<AddIcon />}
               >
                 Add phone number
@@ -231,14 +232,14 @@ export default function CreateItemsContactMethods({ form, setForm }: Params) {
           <div className={styles.button}>
             <Button
               fullWidth={true}
-              variant='contained'
-              color='secondary'
-              onClick={(_) => onSubmit()}
+              variant="contained"
+              color="secondary"
+              onClick={_ => onSubmit()}
             >
               Continue
             </Button>
           </div>
-        </div>
+        </Paper>
         <div className={styles['logo-footer']}>
           <LogoPortrait />
         </div>
@@ -246,8 +247,8 @@ export default function CreateItemsContactMethods({ form, setForm }: Params) {
       <Snackbar open={!!error} autoHideDuration={6000}>
         <Alert
           elevation={6}
-          variant='filled'
-          severity='error'
+          variant="filled"
+          severity="error"
           onClose={() => setError(null)}
         >
           {error}

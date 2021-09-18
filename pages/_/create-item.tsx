@@ -8,8 +8,25 @@ import { Step } from 'components/create-items/step';
 import React, { useState } from 'react';
 import Head from 'next/head';
 import CreateItemsConfirm from 'components/create-items/05-confirm/confirm';
+import LogoPortrait from 'public/logo-landscape.svg';
+import { makeStyles, Theme } from '@material-ui/core';
 
 // TODO Add ability to go back (and repopulate forms)
+const useStyles = makeStyles((theme: Theme) => ({
+  page: {
+    flexDirection: 'column'
+  },
+  // header: {
+
+  // },
+  container: {
+    flexDirection: 'row',
+    '& label': {
+      marginRight: theme.spacing(8)
+    }
+  },
+  root: { color: theme.palette.secondary.main }
+}));
 
 export default function CreateItemPage() {
   const [form, setForm] = useState(new Form());
@@ -22,6 +39,9 @@ export default function CreateItemPage() {
         <title>Create QR Codes</title>
       </Head>
       {main}
+      <div>
+        <LogoPortrait />
+      </div>
     </>
   );
 }

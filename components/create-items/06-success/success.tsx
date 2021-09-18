@@ -21,25 +21,36 @@ export default function CreateItemsSuccess({ form, setForm }: Params) {
   const [items, setItems] = useState(form[Step.Confirm].items);
   const onlyOneItem = items.length === 1;
 
+  function backToStart() {
+    setForm({ ...form, step: Step.Names });
+  }
+
   return (
     <>
       <div className={styles['create-user-page']}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={_ => backToStart()}
+        >
+          Back To STart
+        </Button>
         <header className={styles.header}>
           <Typography
             className={styles.muted}
-            variant='h6'
-            align='center'
-            component='h1'
+            variant="h6"
+            align="center"
+            component="h1"
           >
             Create QR codes
           </Typography>
-          <Typography variant='h4' component='h2' align='center'>
+          <Typography variant="h4" component="h2" align="center">
             Here {onlyOneItem ? 'is' : 'are'} your QR code
             {onlyOneItem ? '' : 's'}!
           </Typography>
         </header>
         <div className={styles.contents}>
-          {items.map((item) => (
+          {items.map(item => (
             <div key={item.itemId} className={styles.content}>
               <SuccessQrCodeNoSSR
                 itemId={item.itemId}

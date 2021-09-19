@@ -14,6 +14,10 @@ export type IAuthenticationResult =
   | IAuthenticationSuccessResult
   | IAuthenticationFailureResult;
 
+export type ISuccessResult = { success: true };
+export type IFailureResult = { success: false; error: Error };
+export type IResult = ISuccessResult | IFailureResult;
+
 export interface ICredentials {
   emailAddress: string;
   password: string;
@@ -64,10 +68,27 @@ export const useAuthService = () => {
       .catch(error => ({ success: false, error: error as Error } as const));
   }
 
+  async function updateUserDisplayName(displayName: string): Promise<IResult> {
+    const user = firebase.auth().currentUser;
+    if (!user) {
+      return {
+        success: false,
+        error: new Error(
+          'Could not set display name of user, there is no current user'
+        )
+      };
+    }
+    return user
+      .updateProfile({ displayName })
+      .then(() => ({ success: true } as const))
+      .catch(error => ({ success: false, error: error as Error } as const));
+  }
+
   return {
     loginOrRegisterWithFacebookPopup,
     loginOrRegisterWithGooglePopup,
     registerWithCredentials,
-    loginWithCredentials
+    loginWithCredentials,
+    updateUserDisplayName
   };
 };

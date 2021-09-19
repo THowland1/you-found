@@ -16,7 +16,11 @@ export const AuthPopupForm: FC<{
   isNewUser: boolean;
   onAuthSuccess: Callback<IAuthenticationSuccessResult>;
 }> = ({ isNewUser, onAuthSuccess }) => {
-  const { loginWithCredentials, registerWithCredentials } = useAuthService();
+  const {
+    loginWithCredentials,
+    registerWithCredentials,
+    updateUserDisplayName
+  } = useAuthService();
   const [error, setError] = React.useState<string | null>(null);
 
   const schema: yup.SchemaOf<typeof initialValues> = yup.object().shape({
@@ -24,10 +28,22 @@ export const AuthPopupForm: FC<{
       .string()
       .required('Please enter a valid email address')
       .email('Please enter a valid email address'),
-    password: yup.string().required('Please enter a password')
+    password: yup.string().required('Please enter a password'),
+    displayName: yup.string().when({
+      is: () => isNewUser,
+      then: yup
+        .string()
+        .required(
+          'Please enter a display name (can be your real name or something wacky)'
+        )
+    })
   });
 
-  const initialValues = { emailAddress: '', password: '' };
+  const initialValues = {
+    emailAddress: '',
+    password: '',
+    displayName: '' as string | undefined
+  };
 
   function loginOrRegister(
     credentials: ICredentials
@@ -38,11 +54,27 @@ export const AuthPopupForm: FC<{
   }
 
   async function onFormSubmit(values: typeof initialValues) {
-    const authResult = await loginOrRegister(values);
-    if (authResult.success) {
-      onAuthSuccess(authResult);
+    if (isNewUser) {
+      const registerResult = await registerWithCredentials(values);
+      if (registerResult.success) {
+        const updateResult = await updateUserDisplayName(
+          values.displayName as string
+        );
+        if (updateResult.success) {
+          onAuthSuccess(registerResult);
+        } else {
+          setError(updateResult.error.message);
+        }
+      } else {
+        setError(registerResult.error.message);
+      }
     } else {
-      setError(authResult.error.message);
+      const loginResult = await loginWithCredentials(values);
+      if (loginResult.success) {
+        onAuthSuccess(loginResult);
+      } else {
+        setError(loginResult.error.message);
+      }
     }
   }
 
@@ -71,6 +103,23 @@ export const AuthPopupForm: FC<{
                 }
               />
             </Grid>
+            {isNewUser && (
+              <Grid item xs={12}>
+                <TextField
+                  label="Display Name"
+                  name="displayName"
+                  fullWidth
+                  error={Boolean(errors.displayName && touched.displayName)}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  helperText={
+                    errors.displayName &&
+                    touched.displayName &&
+                    String(errors.displayName)
+                  }
+                />
+              </Grid>
+            )}
             <Grid item xs={12}>
               <TextField
                 label="Password"

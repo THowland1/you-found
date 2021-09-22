@@ -2,18 +2,18 @@ import {
   INewItemsRequest,
   INewItemsRequestItemPage,
   INewItemsRequestItemPageLink,
-  INewItemsRequestItemPageLinkType,
+  INewItemsRequestItemPageLinkType
 } from 'models/api/new-items-request';
 import {
   INewItemsResponse,
-  INewItemsResponseItem,
+  INewItemsResponseItem
 } from 'models/api/new-items-response';
 import {
   IItem,
   IItemPage,
   IItemPageLink,
   IItemPageLinkType,
-  Item,
+  Item
 } from 'models/schema/item';
 import { IUser, User } from 'models/schema/user';
 import { Types } from 'mongoose';
@@ -31,21 +31,21 @@ function mapItemPageLink(
         linkId: itemPageLink.linkId,
         type: IItemPageLinkType.SMS,
         text: itemPageLink.text,
-        phoneNumberId: itemPageLink.phoneNumberId,
+        phoneNumberId: itemPageLink.phoneNumberId
       };
     case INewItemsRequestItemPageLinkType.WhatsApp:
       return {
         linkId: itemPageLink.linkId,
         type: IItemPageLinkType.WhatsApp,
         text: itemPageLink.text,
-        phoneNumberId: itemPageLink.phoneNumberId,
+        phoneNumberId: itemPageLink.phoneNumberId
       };
     case INewItemsRequestItemPageLinkType.Email:
       return {
         linkId: itemPageLink.linkId,
         type: IItemPageLinkType.Email,
         text: itemPageLink.text,
-        emailAddressId: itemPageLink.emailAddressId,
+        emailAddressId: itemPageLink.emailAddressId
       };
     default:
       throw new TypeError('Link Type not accounted for');
@@ -55,7 +55,7 @@ function mapItemPageLink(
 function mapItemPage(itemPage: INewItemsRequestItemPage): IItemPage {
   return {
     links: itemPage.links.map(mapItemPageLink),
-    message: itemPage.message,
+    message: itemPage.message
   };
 }
 
@@ -65,17 +65,17 @@ export async function post(
 ) {
   try {
     await validate(req);
-    const newItems = req.body.items.map<IItem>((item) => ({
+    const newItems = req.body.items.map<IItem>(item => ({
       itemName: item.itemName,
       itemPage: mapItemPage(item.itemPage),
-      user: Types.ObjectId(req.body.userId),
+      user: Types.ObjectId(req.body.userId)
     }));
     const newItemDocuments = await Item.create(newItems);
     const responseBody: INewItemsResponse = {
-      items: newItemDocuments.map<INewItemsResponseItem>((itemDoc) => ({
+      items: newItemDocuments.map<INewItemsResponseItem>(itemDoc => ({
         itemId: itemDoc._id!.toHexString(),
-        itemName: itemDoc.itemName,
-      })),
+        itemName: itemDoc.itemName
+      }))
     };
     res.status(200).json(responseBody);
   } catch (e) {

@@ -17,7 +17,7 @@ export module ContactMethodsApiClient {
       );
       return successResponse.data;
     } catch (e) {
-      const error: AxiosError<any> = e;
+      const error = e as AxiosError<any>;
       if (error.isAxiosError && onAxiosError) {
         onAxiosError(error.response?.data);
       }
@@ -37,7 +37,7 @@ export module ContactMethodsApiClient {
       );
       return successResponse.data;
     } catch (e) {
-      const error: AxiosError<any> = e;
+      const error = e as AxiosError<any>;
       if (error.isAxiosError && onAxiosError) {
         onAxiosError(error.response?.data);
       } else {

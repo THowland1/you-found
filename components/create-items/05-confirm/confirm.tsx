@@ -25,7 +25,8 @@ export default function CreateItemsConfirm({ form, setForm }: Params) {
       );
       await onSuccess(response.data);
     } catch (e) {
-      const error: AxiosError<any> = e;
+      const error = e as AxiosError<any>;
+
       if (error.isAxiosError) {
         setError(error.response?.data.message);
       }
@@ -35,7 +36,7 @@ export default function CreateItemsConfirm({ form, setForm }: Params) {
     setForm({
       ...form,
       step: Step.Success,
-      [Step.Confirm]: mapResponseBodyToSubform(response),
+      [Step.Confirm]: mapResponseBodyToSubform(response)
     });
     realisticConfetti();
   }
@@ -50,13 +51,13 @@ export default function CreateItemsConfirm({ form, setForm }: Params) {
         <header className={styles.header}>
           <Typography
             className={styles.muted}
-            variant='h6'
-            align='center'
-            component='h1'
+            variant="h6"
+            align="center"
+            component="h1"
           >
             Create QR codes
           </Typography>
-          <Typography variant='h4' component='h2' align='center'>
+          <Typography variant="h4" component="h2" align="center">
             Confirm
           </Typography>
         </header>
@@ -66,9 +67,9 @@ export default function CreateItemsConfirm({ form, setForm }: Params) {
           style={{ width: '20rem', padding: '1rem', marginTop: '1rem' }}
         >
           <Button
-            variant='contained'
-            color='primary'
-            onClick={(_) => submitUser()}
+            variant="contained"
+            color="primary"
+            onClick={_ => submitUser()}
           >
             Yeah, make my QR codes
           </Button>

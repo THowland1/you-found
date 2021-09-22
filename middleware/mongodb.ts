@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { ConnectOptions } from 'mongoose';
 
 const connectDB = async () => {
   if (mongoose.connections[0].readyState) {
@@ -8,8 +8,8 @@ const connectDB = async () => {
     useUnifiedTopology: true,
     useFindAndModify: false,
     useCreateIndex: true,
-    useNewUrlParser: true,
-  });
+    useNewUrlParser: true
+  } as ConnectOptions);
 };
 
 export default connectDB;

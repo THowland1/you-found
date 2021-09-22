@@ -17,7 +17,8 @@ export default function CreateUserPage() {
     try {
       await axios.post('/api/create-user', newUser);
     } catch (e) {
-      const error: AxiosError<any> = e;
+      const error = e as AxiosError<any>;
+
       if (error.isAxiosError) {
         setError(error.response?.data.message);
       }
@@ -31,8 +32,8 @@ export default function CreateUserPage() {
           <div className={styles.input}>
             <TextField
               defaultValue={newUser.userEmailAddress}
-              label='Email Address'
-              onChange={(e) =>
+              label="Email Address"
+              onChange={e =>
                 setNewUser({ ...newUser, userEmailAddress: e.target.value })
               }
             />
@@ -40,8 +41,8 @@ export default function CreateUserPage() {
           <div className={styles.input}>
             <TextField
               defaultValue={newUser.userFullName}
-              label='Full Name'
-              onChange={(e) =>
+              label="Full Name"
+              onChange={e =>
                 setNewUser({ ...newUser, userFullName: e.target.value })
               }
             />
@@ -49,14 +50,14 @@ export default function CreateUserPage() {
           <div className={styles.input}>
             <TextField
               defaultValue={newUser.userHandle}
-              label='Handle'
-              onChange={(e) =>
+              label="Handle"
+              onChange={e =>
                 setNewUser({ ...newUser, userHandle: e.target.value })
               }
             />
           </div>
           <div className={styles.button}>
-            <Button variant='contained' color='primary' onClick={submitUser}>
+            <Button variant="contained" color="primary" onClick={submitUser}>
               Create account
             </Button>
           </div>
@@ -68,8 +69,8 @@ export default function CreateUserPage() {
       <Snackbar open={!!error} autoHideDuration={6000}>
         <Alert
           elevation={6}
-          variant='filled'
-          severity='error'
+          variant="filled"
+          severity="error"
           onClose={() => setError(null)}
         >
           {error}

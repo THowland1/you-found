@@ -29,7 +29,7 @@ async function post<TResponse, TRequest>(
     const successResponse = await axios.post<TResponse>(url, body);
     return successResponse.data;
   } catch (e) {
-    const error: AxiosError<any> = e;
+    const error = e as AxiosError<any>;
     if (error.isAxiosError && onAxiosError) {
       onAxiosError(error.response?.data);
       throw new HandledError(error);

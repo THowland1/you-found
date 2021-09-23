@@ -1,10 +1,24 @@
-import { AppBar, Box, Button, IconButton, Toolbar } from '@material-ui/core';
-import MenuIcon from '@material-ui/icons/Menu';
+import {
+  AppBar,
+  Box,
+  Button,
+  IconButton,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  Toolbar
+} from '@material-ui/core';
+import LogoutIcon from '@material-ui/icons/MeetingRoom';
+import { useAuth } from 'components/shared/auth/useAuth';
 import React, { FC } from 'react';
+import { useAuthService } from 'utils/hooks/useAuthService';
+import { v4 } from 'uuid';
 import { AuthPopup } from './AuthPopup';
 
 export const NavBar: FC = () => {
   const [popupOpen, setPopupOpen] = React.useState(false);
+  const { user } = useAuth();
+  const { logout } = useAuthService();
 
   return (
     <AppBar position="static">
@@ -15,14 +29,69 @@ export const NavBar: FC = () => {
           color="inherit"
           aria-label="menu"
         >
-          <MenuIcon />
         </IconButton> */}
         <Box sx={{ flexGrow: 1 }} />
-        <AuthPopup open={popupOpen} setOpen={setPopupOpen} />
-        <Button onClick={() => setPopupOpen(true)} color="inherit">
-          Log in / Register
-        </Button>
+        {user ? (
+          <BasicMenu buttonText={user.displayName || 'My account'}>
+            <MenuItem disabled>
+              Signed in{user.displayName ? ' as ' + user.displayName : ''}
+            </MenuItem>
+            <MenuItem onClick={logout}>
+              <ListItemIcon>
+                <LogoutIcon fontSize="small" />
+              </ListItemIcon>
+              Log out
+            </MenuItem>
+          </BasicMenu>
+        ) : (
+          <>
+            <AuthPopup open={popupOpen} setOpen={setPopupOpen} />
+            <Button onClick={() => setPopupOpen(true)} color="inherit">
+              Log in / Register
+            </Button>
+          </>
+        )}
       </Toolbar>
     </AppBar>
+  );
+};
+
+const BasicMenu: FC<{ children?: React.ReactNode; buttonText: string }> = ({
+  children,
+  buttonText
+}) => {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [idSuffix] = React.useState(v4());
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  return (
+    <>
+      <Button
+        id={'basic-button-' + idSuffix}
+        aria-controls={'basic-menu-' + idSuffix}
+        aria-haspopup="true"
+        aria-expanded={open ? 'true' : undefined}
+        onClick={handleClick}
+      >
+        {buttonText}
+      </Button>
+      <Menu
+        id={'basic-menu-' + idSuffix}
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          'aria-labelledby': 'basic-button-' + idSuffix
+        }}
+      >
+        {children}
+      </Menu>
+    </>
   );
 };

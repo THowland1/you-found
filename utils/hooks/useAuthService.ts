@@ -84,11 +84,16 @@ export const useAuthService = () => {
       .catch(error => ({ success: false, error: error as Error } as const));
   }
 
+  async function logout(): Promise<void> {
+    return firebase.auth().signOut();
+  }
+
   return {
     loginOrRegisterWithFacebookPopup,
     loginOrRegisterWithGooglePopup,
     registerWithCredentials,
     loginWithCredentials,
-    updateUserDisplayName
+    updateUserDisplayName,
+    logout
   };
 };

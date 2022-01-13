@@ -1,4 +1,4 @@
-import { Typography } from '@material-ui/core';
+import { Typography } from '@mui/material';
 import { NavBar } from 'components/shared/shell/NavBar';
 import Head from 'next/head';
 import React from 'react';

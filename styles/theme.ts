@@ -1,61 +1,70 @@
-import { createTheme } from '@material-ui/core/styles';
-import { red } from '@material-ui/core/colors';
-// $coral-gradient: linear-gradient(135deg, #feb692 10%, #ea5455 100%);
-// $turquoise-gradient: linear-gradient(to right, #0f3443, #34e89e);
-// --body-light: #F6F7F9;
-// --body-dark: #202427;
-// --card-light:  #fff;
-// --card-dark: #2E3237;
-// --font-light: #202427;
-// --font-dark: #F6F7F9;
-
-const defaultTheme = createTheme();
+import { createTheme } from '@mui/material';
 
 export const theme = createTheme({
-  overrides: {
-    MuiPaper: {
-      rounded: {
-        borderRadius: '1rem'
-      }
-    },
-    MuiCssBaseline: {
-      '@global': {
-        // MUI typography elements use REMs, so you can scale the global
-        // font size by setting the font-size on the <html> element.
-        // html: {
-        //   fontSize: '75%',
-        //   [defaultTheme.breakpoints.up('sm')]: {
-        //     fontSize: '82.5%'
-        //   },
-        //   [defaultTheme.breakpoints.up('md')]: {
-        //     fontSize: '90%'
-        //   },
-        //   [defaultTheme.breakpoints.up('lg')]: {
-        //     fontSize: '100%'
-        //   }
-        // }
-      }
-    }
-  },
   palette: {
-    type: 'dark',
     primary: {
-      main: '#ea5455'
+      '50': '#C9EEEA',
+      light: '#00C7B7',
+      main: '#00AD9F',
+      dark: '#15847B',
+      '900': '#0D544E',
+      contrastText: '#FFFFFF'
     },
     secondary: {
-      main: '#19857b',
-      '100': '#19857b33'
+      '50': '#F7F8F8',
+      light: '#E9EBEB',
+      main: '#A3A9AC',
+      dark: '#7D8589',
+      '900': '#2D3B41'
     },
-
+    grey: {
+      '50': '#F7F8F8',
+      '300': '#E9EBEB',
+      '500': '#A3A9AC',
+      '700': '#7D8589',
+      '900': '#2D3B41'
+    },
+    success: {
+      '50': '#C9EEEA',
+      light: '#00C7B7',
+      main: '#00AD9F',
+      dark: '#15847B',
+      '900': '#0D544E'
+    },
     error: {
-      main: red.A400
+      '50': '#FED7E2',
+      light: '#FC989F',
+      main: '#FA3946',
+      dark: '#DF111F',
+      '900': '#BE131E'
     },
     background: {
-      default: '#202427'
+      default: '#F7FCFC',
+      paper: '#FFFFFF'
+    },
+    text: {
+      primary: '#0E1E25'
+      //   secondary: '#F7F8F8',
     }
   },
   typography: {
     fontFamily:
-      '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif'
+      '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif',
+    h1: {
+      fontSize: '2.75rem',
+      fontWeight: 300
+    },
+    h2: {
+      fontSize: '2.25rem',
+      fontWeight: 400
+    },
+    h3: {
+      fontSize: '1.75rem',
+      fontWeight: 400
+    },
+    h4: {
+      fontSize: '1.25rem',
+      fontWeight: 400
+    }
   }
 });

@@ -1,5 +1,4 @@
-import { Button, Grid, TextField } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import { Button, Grid, TextField } from '@mui/material';
 import {
   IAuthenticationResult,
   IAuthenticationSuccessResult,
@@ -9,6 +8,7 @@ import {
 import { Form, Formik } from 'formik';
 import React, { FC } from 'react';
 import * as yup from 'yup';
+import { Alert } from '@mui/material';
 
 type Callback<TArg, TResult = void> = (arg: TArg) => TResult;
 

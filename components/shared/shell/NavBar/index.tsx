@@ -7,8 +7,8 @@ import {
   Menu,
   MenuItem,
   Toolbar
-} from '@material-ui/core';
-import LogoutIcon from '@material-ui/icons/MeetingRoom';
+} from '@mui/material';
+import LogoutIcon from '@mui/icons-material/MeetingRoom';
 import { useAuth } from 'components/shared/auth/useAuth';
 import React, { FC } from 'react';
 import { useAuthService } from 'utils/hooks/useAuthService';

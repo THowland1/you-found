@@ -6,7 +6,8 @@ import {
   ListItemIcon,
   Menu,
   MenuItem,
-  Toolbar
+  Toolbar,
+  Typography
 } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/MeetingRoom';
 import { useAuth } from 'components/shared/auth/useAuth';
@@ -23,13 +24,15 @@ export const NavBar: FC = () => {
   return (
     <AppBar position="static">
       <Toolbar>
-        {/* <IconButton
+        <IconButton
           size="medium"
           edge="start"
           color="inherit"
           aria-label="menu"
-        >
-        </IconButton> */}
+        ></IconButton>
+        <Typography variant="h4">
+          <em>YouFound</em>
+        </Typography>
         <Box sx={{ flexGrow: 1 }} />
         {user ? (
           <BasicMenu buttonText={user.displayName || 'My account'}>

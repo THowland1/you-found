@@ -22,6 +22,7 @@ import { Dump } from 'components/shared/Dump';
 import { Field, Form, Formik, useField } from 'formik';
 import { IItem } from 'models/schema/item';
 import { GetServerSideProps, NextPage } from 'next';
+import { honeycomb } from 'styles/backgrounds';
 import { z } from 'zod';
 import { toFormikValidationSchema } from 'zod-formik-adapter';
 import { getItemById } from '../api/items/[itemId]/index';
@@ -49,14 +50,10 @@ const ItemPage: NextPage<ServerSideProps> = ({ item }) => {
         >
           <Grid
             container
-            maxWidth={'500px'}
+            maxWidth={theme.breakpoints.values.sm}
             margin={'auto'}
-            sx={{
-              padding: '2rem',
-              [theme.breakpoints.down('sm')]: {
-                padding: '1rem'
-              }
-            }}
+            paddingX={{ xs: '1rem', sm: '2rem' }}
+            paddingY={'2rem'}
           >
             <Typography variant="h2">{item.headline}</Typography>
           </Grid>
@@ -65,21 +62,15 @@ const ItemPage: NextPage<ServerSideProps> = ({ item }) => {
           item
           xs
           sx={{
-            background: `
-            
-            radial-gradient(circle farthest-side at 0% 50%,${theme.palette.background.default} 23.5%,rgba(240,166,17,0) 0)21px 30px,
-            radial-gradient(circle farthest-side at 0% 50%,${theme.palette.grey[200]} 24%,rgba(240,166,17,0) 0)19px 30px,
-            linear-gradient(${theme.palette.background.default} 14%,rgba(240,166,17,0) 0, rgba(240,166,17,0) 85%,${theme.palette.background.default} 0)0 0,
-            linear-gradient(150deg,${theme.palette.background.default} 24%,${theme.palette.grey[200]} 0,${theme.palette.grey[200]} 26%,rgba(240,166,17,0) 0,rgba(240,166,17,0) 74%,${theme.palette.grey[200]} 0,${theme.palette.grey[200]} 76%,${theme.palette.background.default} 0)0 0,
-            linear-gradient(30deg,${theme.palette.background.default} 24%,${theme.palette.grey[200]} 0,${theme.palette.grey[200]} 26%,rgba(240,166,17,0) 0,rgba(240,166,17,0) 74%,${theme.palette.grey[200]} 0,${theme.palette.grey[200]} 76%,${theme.palette.background.default} 0)0 0,
-            linear-gradient(90deg,${theme.palette.grey[200]} 2%,${theme.palette.background.default} 0,${theme.palette.background.default} 98%,${theme.palette.grey[200]} 0%)0 0 ${theme.palette.background.default};
-            background-size: 40px 60px;
-          `
+            background: honeycomb(
+              theme.palette.background.default,
+              theme.palette.grey[200]
+            )
           }}
         >
           <Grid
             container
-            maxWidth={'500px'}
+            maxWidth={theme.breakpoints.values.sm}
             margin={'auto'}
             direction="column"
             gap="2rem"

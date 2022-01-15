@@ -63,28 +63,28 @@ export async function post(
   req: ApiPostRequest<INewItemsRequest>,
   res: NextApiResponse<INewItemsResponse>
 ) {
-  try {
-    await validate(req);
-    const newItems = req.body.items.map<IItem>(item => ({
-      itemName: item.itemName,
-      itemPage: mapItemPage(item.itemPage),
-      user: Types.ObjectId(req.body.userId)
-    }));
-    const newItemDocuments = await Item.create(newItems);
-    const responseBody: INewItemsResponse = {
-      items: newItemDocuments.map<INewItemsResponseItem>(itemDoc => ({
-        itemId: itemDoc._id!.toHexString(),
-        itemName: itemDoc.itemName
-      }))
-    };
-    res.status(200).json(responseBody);
-  } catch (e) {
-    if (e instanceof ValidationError) {
-      res.status(400).json(e as unknown as any);
-    } else {
-      res.status(500);
-    }
-  } finally {
-    res.end();
-  }
+  // try {
+  //   await validate(req);
+  //   const newItems = req.body.items.map<IItem>(item => ({
+  //     itemName: item.itemName,
+  //     itemPage: mapItemPage(item.itemPage),
+  //     user: Types.ObjectId(req.body.userId)
+  //   }));
+  //   const newItemDocuments = await Item.create(newItems);
+  //   const responseBody: INewItemsResponse = {
+  //     items: newItemDocuments.map<INewItemsResponseItem>(itemDoc => ({
+  //       itemId: itemDoc._id!.toHexString(),
+  //       itemName: itemDoc.itemName
+  //     }))
+  //   };
+  //   res.status(200).json(responseBody);
+  // } catch (e) {
+  //   if (e instanceof ValidationError) {
+  //     res.status(400).json(e as unknown as any);
+  //   } else {
+  //     res.status(500);
+  //   }
+  // } finally {
+  //   res.end();
+  // }
 }

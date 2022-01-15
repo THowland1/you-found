@@ -1,7 +1,7 @@
 import { ValidationError } from 'utils/validation/validation-error';
 import { ValidationErrorCode } from 'utils/validation/validation-error-code';
-import connectDB from '../../../middleware/mongodb';
-import { IUser, IUserItem, User } from '../../../models/schema/user';
+import connectDB from '../../../../middleware/mongodb';
+import { IUser, IUserItem, User } from '../../../../models/schema/user';
 
 export const getUserAndItem = async (
   userHandle: string,

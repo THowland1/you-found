@@ -1,7 +1,7 @@
 import * as ApiModels from 'models/api';
 import { NextApiResponse } from 'next';
 import { ApiGetRequest, ApiPutRequest } from 'utils/api/api-request';
-import connectDB from '../../../middleware/mongodb';
+import connectDB from '../../../../middleware/mongodb';
 import { get } from './contact-methods.get';
 import { put } from './contact-methods.put';
 

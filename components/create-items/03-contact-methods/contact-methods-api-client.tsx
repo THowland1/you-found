@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import * as ApiModels from 'models/api';
-import { contactMethodsApiPath } from 'pages/api/[userId]/contact-methods';
+import { contactMethodsApiPath } from 'pages/api/users/[userId]/contact-methods';
 
 export module ContactMethodsApiClient {
   type IRouteParams = ApiModels.ContactMethods.IRouteParams;

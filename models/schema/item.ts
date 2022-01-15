@@ -7,14 +7,14 @@ import { IUserDocument } from './user';
 export const itemValidation = {
   itemName: {
     minLength: 1,
-    maxLength: 50,
-  },
+    maxLength: 50
+  }
 };
 
 export enum IItemPageLinkType {
   SMS = 'sms',
   WhatsApp = 'whatsapp',
-  Email = 'email',
+  Email = 'email'
 }
 
 interface IBaseItemPageLink {
@@ -50,36 +50,42 @@ export interface IItemPage {
 }
 
 export interface IItem {
-  user: IMongooseRef<IUserDocument>;
+  emailAddress: string;
+  headline: string;
   itemName: string;
-  itemPage: IItemPage;
+  message: string;
+  phoneNumber: string;
+  showEmailLink: boolean;
+  showPhoneCallLink: boolean;
+  showSMSLink: boolean;
+  showWhatsAppLink: boolean;
 }
 
 export const IUserProps: { [key in keyof IItem]: key } = {
-  user: 'user',
+  emailAddress: 'emailAddress',
+  headline: 'headline',
   itemName: 'itemName',
-  itemPage: 'itemPage',
+  message: 'message',
+  phoneNumber: 'phoneNumber',
+  showEmailLink: 'showEmailLink',
+  showPhoneCallLink: 'showPhoneCallLink',
+  showSMSLink: 'showSMSLink',
+  showWhatsAppLink: 'showWhatsAppLink'
 };
 
 export type IItemDocument = IMongooseDocument<IItem>;
 export type IItemRef = IMongooseRef<IItemDocument>;
 
-const ItemPageSchema = new Schema({
-  message: { type: String, required: true },
-  links: [
-    {
-      linkId: { type: String, required: true },
-      type: { type: String, required: true },
-      phoneNumberId: String,
-      emailAddressId: String,
-    },
-  ],
-});
-
 const ItemSchema: Schema = new Schema({
-  user: { type: Schema.Types.ObjectId, ref: SchemaNames.USER },
+  emailAddress: { type: String, required: true },
+  headline: { type: String, required: true },
   itemName: { type: String, required: true },
-  itemPage: ItemPageSchema,
+  message: { type: String, required: true },
+  phoneNumber: { type: String, required: true },
+  showEmailLink: { type: Boolean, required: true },
+  showPhoneCallLink: { type: Boolean, required: true },
+  showSMSLink: { type: Boolean, required: true },
+  showWhatsAppLink: { type: Boolean, required: true }
 });
 
 const getModel = () => {

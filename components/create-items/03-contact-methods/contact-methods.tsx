@@ -14,7 +14,6 @@ import { Add as AddIcon, Remove as RemoveIcon } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import axios, { AxiosError } from 'axios';
 import * as ApiModels from 'models/api';
-import { contactMethodsApiPath } from 'pages/api/[userId]/contact-methods';
 import LogoPortrait from 'public/logo-landscape.svg';
 import React, { useEffect, useState } from 'react';
 import { useStateArray } from 'utils/hooks/use-state-array';

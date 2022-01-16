@@ -19,13 +19,13 @@ import {
 } from '@mui/material';
 import axios, { AxiosResponse } from 'axios';
 import { Dump } from 'components/shared/Dump';
+import { getItemById } from 'data-layer/getItemById';
 import { Field, Form, Formik, useField } from 'formik';
 import { IItem } from 'models/schema/item';
 import { GetServerSideProps, NextPage } from 'next';
 import { honeycomb } from 'styles/backgrounds';
 import { z } from 'zod';
 import { toFormikValidationSchema } from 'zod-formik-adapter';
-import { getItemById } from '../api/items/[itemId]/index';
 
 type ServerSideProps = { item: IItem };
 const ItemPage: NextPage<ServerSideProps> = ({ item }) => {

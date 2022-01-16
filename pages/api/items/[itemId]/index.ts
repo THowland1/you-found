@@ -1,18 +1,7 @@
+import { getItemById } from 'data-layer/getItemById';
 import connectDB from 'middleware/mongodb';
-import { Item } from 'models/schema/item';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
-import { schema } from '../../../_/new';
-
-export async function getItemById(itemId: string) {
-  await connectDB();
-  z.string().parse(itemId);
-  const item = await Item.findById(itemId).lean();
-  if (item) {
-    delete item._id;
-  }
-  return item;
-}
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {

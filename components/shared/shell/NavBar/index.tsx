@@ -3,9 +3,11 @@ import {
   Box,
   Button,
   IconButton,
+  Link,
   ListItemIcon,
   Menu,
   MenuItem,
+  Theme,
   Toolbar,
   Typography
 } from '@mui/material';
@@ -15,11 +17,13 @@ import React, { FC } from 'react';
 import { useAuthService } from 'utils/hooks/useAuthService';
 import { v4 } from 'uuid';
 import { AuthPopup } from './AuthPopup';
+import { useTheme } from '@mui/system';
 
 export const NavBar: FC = () => {
   const [popupOpen, setPopupOpen] = React.useState(false);
   const { user } = useAuth();
   const { logout } = useAuthService();
+  const theme = useTheme<Theme>();
 
   return (
     <AppBar position="static">
@@ -30,9 +34,11 @@ export const NavBar: FC = () => {
           color="inherit"
           aria-label="menu"
         ></IconButton>
-        <Typography variant="h4">
-          <em>YouFound</em>
-        </Typography>
+        <Link color="inherit" underline="hover" href="/">
+          <Typography variant="h4">
+            <em>YouFound</em>
+          </Typography>
+        </Link>
         <Box sx={{ flexGrow: 1 }} />
         {user ? (
           <BasicMenu buttonText={user.displayName || 'My account'}>

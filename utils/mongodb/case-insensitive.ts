@@ -1,4 +1,4 @@
-import { QuerySelector } from 'mongodb';
+import { QuerySelector } from 'mongoose';
 
 function sanitizeRegexpInput(value: string) {
   return value.replace(/[#-.]|[[-^]|[?|{}]/g, '\\$&');

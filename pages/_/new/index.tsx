@@ -1,7 +1,6 @@
 import { LoadingButton } from '@mui/lab';
 import {
   Box,
-  Button,
   Checkbox,
   CheckboxProps,
   FormControlLabel,
@@ -16,27 +15,12 @@ import { useTheme } from '@mui/system';
 import axios from 'axios';
 import Shell from 'components/shared/shell';
 import { Field, Form, Formik, useField } from 'formik';
+import { INewItem, newItemSchema } from 'models/new-item';
 import { NextPage } from 'next';
 import Head from 'next/head';
-import { honeycomb } from 'styles/backgrounds';
-import { z } from 'zod';
 import { toFormikValidationSchema } from 'zod-formik-adapter';
 
-export const schema = z.object({
-  itemName: z.string(),
-  headline: z.string(),
-  message: z.string(),
-  phoneNumber: z.string(),
-  showWhatsAppLink: z.boolean(),
-  showPhoneCallLink: z.boolean(),
-  showSMSLink: z.boolean(),
-  emailAddress: z.string().email(),
-  showEmailLink: z.boolean()
-});
-
-export type Schema = z.infer<typeof schema>;
-
-const initialValues: Schema = {
+const initialValues: INewItem = {
   itemName: '',
   headline: '',
   message: '',
@@ -84,7 +68,7 @@ function FormikTextField({
 }
 
 const NewPage: NextPage = () => {
-  const submitUser = async (values: Schema) => {
+  const submitUser = async (values: INewItem) => {
     await axios.post('/api/items', values);
   };
 
@@ -98,7 +82,7 @@ const NewPage: NextPage = () => {
       </Head>
       <Formik
         initialValues={initialValues}
-        validationSchema={toFormikValidationSchema(schema)}
+        validationSchema={toFormikValidationSchema(newItemSchema)}
         onSubmit={values => submitUser(values)}
       >
         {({ values, submitForm, isSubmitting }) => (

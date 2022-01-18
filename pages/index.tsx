@@ -28,35 +28,60 @@ export default function Home() {
           <Typography variant="h2" color="textPrimary">
             Welcome to YouFound
           </Typography>
-          <Link underline="none" href="/_/new" color={'textPrimary'}>
-            <Grid
-              container
-              sx={{
-                background: theme.palette.background.default,
-                padding: '1rem',
-                border: `solid 1px ${theme.palette.grey[300]}`,
-                borderRadius: '.5rem',
-                boxShadow: theme.shadows[1],
-                '&:hover': {
-                  boxShadow: theme.shadows[4]
-                }
-              }}
-            >
-              <Grid xs item>
-                <Typography variant="h4">Register a new code</Typography>
-                <Typography variant="body1" color="GrayText">
-                  Sign yourself up to be contacted if someone finds your stuff
-                </Typography>
-              </Grid>
-              <Grid item>
-                <IconButton>
-                  <ArrowForward />
-                </IconButton>
-              </Grid>
-            </Grid>
-          </Link>
+          <Section
+            href="/_/new"
+            h4Text="Register a new code"
+            body1Text="Sign yourself up to be contacted if someone finds your stuff"
+          />
+          <Section
+            href="/_/items"
+            h4Text="See your codes"
+            body1Text="Edit what people see when they scan your code(s) or check if they have been spotted"
+          />
         </Grid>
       </Shell>
     </>
+  );
+}
+
+export function Section({
+  href,
+  h4Text,
+  body1Text
+}: {
+  href: string;
+  h4Text: string;
+  body1Text: string;
+}): JSX.Element {
+  const theme = useTheme<Theme>();
+
+  return (
+    <Link underline="none" href={href} color={'textPrimary'}>
+      <Grid
+        container
+        sx={{
+          background: theme.palette.background.default,
+          padding: '1rem',
+          border: `solid 1px ${theme.palette.grey[300]}`,
+          borderRadius: '.5rem',
+          boxShadow: theme.shadows[1],
+          '&:hover': {
+            boxShadow: theme.shadows[4]
+          }
+        }}
+      >
+        <Grid xs item>
+          <Typography variant="h4">{h4Text}</Typography>
+          <Typography variant="body1" color="GrayText">
+            {body1Text}
+          </Typography>
+        </Grid>
+        <Grid item>
+          <IconButton>
+            <ArrowForward />
+          </IconButton>
+        </Grid>
+      </Grid>
+    </Link>
   );
 }

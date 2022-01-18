@@ -24,6 +24,7 @@
     "axios": "^0.21.1",
     "canvas-confetti": "^1.4.0",
     "firebase": "^8.10.0",
+    "firebase-admin": "^10.0.1",
     "formik": "^2.2.9",
     "mongoose": "^6.1.7",
     "next": "^11.1.3",

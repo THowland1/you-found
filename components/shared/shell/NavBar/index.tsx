@@ -18,6 +18,7 @@ import { useAuthService } from 'utils/hooks/useAuthService';
 import { v4 } from 'uuid';
 import { AuthPopup } from './AuthPopup';
 import { useTheme } from '@mui/system';
+import { AccountCircle } from '@mui/icons-material';
 
 export const NavBar: FC = () => {
   const [popupOpen, setPopupOpen] = React.useState(false);
@@ -87,6 +88,9 @@ const BasicMenu: FC<{ children?: React.ReactNode; buttonText: string }> = ({
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
         onClick={handleClick}
+        startIcon={<AccountCircle />}
+        sx={{ textTransform: 'inherit' }}
+        color="inherit"
       >
         {buttonText}
       </Button>

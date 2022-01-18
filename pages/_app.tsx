@@ -5,6 +5,7 @@ import { CssBaseline, ThemeProvider } from '@mui/material';
 import { theme } from '../styles/theme';
 import { CacheProvider, EmotionCache } from '@emotion/react';
 import createEmotionCache from '../utils/createEmotionCache';
+import { AuthProvider } from 'components/shared/auth/AuthProvider';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -18,9 +19,10 @@ function MyApp(props: MyAppProps) {
   return (
     <CacheProvider value={emotionCache}>
       <ThemeProvider theme={theme}>
-        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-        <CssBaseline />
-        <Component {...pageProps} />
+        <AuthProvider>
+          <CssBaseline />
+          <Component {...pageProps} />
+        </AuthProvider>
       </ThemeProvider>
     </CacheProvider>
   );

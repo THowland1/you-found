@@ -1,31 +1,12 @@
 import { faFacebookMessenger } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Email, Phone, Sms, WhatsApp } from '@mui/icons-material';
-import { LoadingButton } from '@mui/lab';
-import {
-  Box,
-  Button,
-  Checkbox,
-  CheckboxProps,
-  FormControlLabel,
-  FormControlLabelProps,
-  Grid,
-  Link,
-  Paper,
-  TextField,
-  TextFieldProps,
-  Typography,
-  useTheme
-} from '@mui/material';
-import axios, { AxiosResponse } from 'axios';
-import { Dump } from 'components/shared/Dump';
+import { Button, Grid, Link, Typography, useTheme } from '@mui/material';
 import { getItemById } from 'data-layer/getItemById';
-import { Field, Form, Formik, useField } from 'formik';
 import { IItem } from 'models/schema/item';
 import { GetServerSideProps, NextPage } from 'next';
 import { honeycomb } from 'styles/backgrounds';
 import { z } from 'zod';
-import { toFormikValidationSchema } from 'zod-formik-adapter';
 
 type ServerSideProps = { item: IItem };
 const ItemPage: NextPage<ServerSideProps> = ({ item }) => {

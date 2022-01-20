@@ -1,12 +1,19 @@
+import { getItemsByEmailAddress } from 'data-layer/getItemsByEmailAddress';
 import connectDB from 'middleware/mongodb';
 import { newItemSchema } from 'models/new-item';
-import { Item } from 'models/schema/item';
+import { IItem, Item } from 'models/schema/item';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { z } from 'zod';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     await connectDB();
     switch (req.method) {
+      case 'GET':
+        const emailAddress = z.string().parse(req.query.emailAddress);
+        console.log(emailAddress);
+        const items = (await getItemsByEmailAddress(emailAddress)) as IItem[];
+        res.status(200).json(items);
       case 'POST':
         const newItem = newItemSchema.parse(req.body);
         console.log(newItem);

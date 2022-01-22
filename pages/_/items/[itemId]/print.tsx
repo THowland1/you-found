@@ -1,37 +1,36 @@
-import {
-  Grid,
-  Paper,
-  Typography,
-  Stack,
-  Box,
-  useTheme,
-  Theme,
-  Button,
-  IconButton
-} from '@mui/material';
+import { RemoveCircleOutline } from '@mui/icons-material';
 import Print from '@mui/icons-material/Print';
-import { Dump } from 'components/shared/Dump';
+import {
+  Box,
+  Button,
+  IconButton,
+  InputAdornment,
+  Stack,
+  Theme,
+  Typography,
+  useTheme
+} from '@mui/material';
+import FormikTextField from 'components/fields/FormikTextField';
 import Shell from 'components/shared/shell';
 import { getItemById } from 'data-layer/getItemById';
-import { Formik, FieldArray } from 'formik';
+import { FieldArray, Formik } from 'formik';
 import { IItem } from 'models/schema/item';
 import { GetServerSideProps, NextPage } from 'next';
-import { useRouter } from 'next/dist/client/router';
 import Head from 'next/head';
-import QRCode from 'qrcode.react';
+import ReactDOMServer from 'react-dom/server';
 import { z } from 'zod';
 import { toFormikValidationSchema } from 'zod-formik-adapter';
-import ScrollContainer from 'react-indiana-drag-scroll';
-import FormikTextField from 'components/fields/FormikTextField';
-import { RemoveCircleOutline } from '@mui/icons-material';
+import StickerSheetPreview from './StickerSheetPreview';
 
 type ServerSideProps = { item: IItem; baseUrl: string };
 
 const schema = z.object({
+  gap: z.number().min(0),
   codes: z.array(
     z.object({
       value: z.string(),
-      width: z.number().min(0)
+      width: z.number().min(0),
+      padding: z.number().min(0)
     })
   )
 });
@@ -40,10 +39,12 @@ type Schema = z.infer<typeof schema>;
 
 const generateInitialValues = (value: string): Schema => {
   return {
+    gap: 10,
     codes: [
       {
         value,
-        width: 20
+        width: 50,
+        padding: 5
       }
     ]
   };
@@ -70,7 +71,6 @@ const ItemEditPage: NextPage<ServerSideProps> = ({ item, baseUrl }) => {
           <Shell>
             <Stack position={'absolute'} sx={{ inset: 0 }} direction={'row'}>
               <Box
-                component={ScrollContainer}
                 flex={1}
                 overflow="auto"
                 padding="2rem"
@@ -79,25 +79,7 @@ const ItemEditPage: NextPage<ServerSideProps> = ({ item, baseUrl }) => {
                   cursor: 'move'
                 }}
               >
-                <Paper sx={{ width: '210mm', height: '297mm', margin: 'auto' }}>
-                  <Grid
-                    container
-                    gap="1rem"
-                    padding="1rem"
-                    direction="row"
-                    flexWrap={'wrap'}
-                  >
-                    {values.codes.map(({ value, width }, i) => (
-                      <QRCode
-                        key={i}
-                        value={value}
-                        renderAs="svg"
-                        width={`${width}mm`}
-                        height={`${width}mm`}
-                      />
-                    ))}
-                  </Grid>
-                </Paper>
+                <StickerSheetPreview codes={values.codes} gap={values.gap} />
               </Box>
 
               <Box
@@ -112,6 +94,21 @@ const ItemEditPage: NextPage<ServerSideProps> = ({ item, baseUrl }) => {
               >
                 <Stack gap="1rem">
                   <Typography variant="h4">Print out codes</Typography>
+                  <Typography variant="h6">Page</Typography>
+
+                  <FormikTextField
+                    name={`gap`}
+                    label="gap"
+                    InputLabelProps={{ shrink: true }}
+                    autoComplete="off"
+                    fullWidth
+                    type="number"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">mm</InputAdornment>
+                      )
+                    }}
+                  />
                   <FieldArray name="codes">
                     {arrayHelper => (
                       <>
@@ -133,8 +130,28 @@ const ItemEditPage: NextPage<ServerSideProps> = ({ item, baseUrl }) => {
                               label="width"
                               InputLabelProps={{ shrink: true }}
                               autoComplete="off"
-                              fullWidth
                               type="number"
+                              InputProps={{
+                                endAdornment: (
+                                  <InputAdornment position="end">
+                                    mm
+                                  </InputAdornment>
+                                )
+                              }}
+                            />
+                            <FormikTextField
+                              name={`codes.${i}.padding`}
+                              label="padding"
+                              InputLabelProps={{ shrink: true }}
+                              autoComplete="off"
+                              type="number"
+                              InputProps={{
+                                endAdornment: (
+                                  <InputAdornment position="end">
+                                    mm
+                                  </InputAdornment>
+                                )
+                              }}
                             />
                           </>
                         ))}
@@ -181,3 +198,7 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async ({
     };
   }
 };
+
+function encodeSvg(reactElement: JSX.Element) {
+  return 'data:image/svg+xml,' + ReactDOMServer.renderToString(reactElement);
+}

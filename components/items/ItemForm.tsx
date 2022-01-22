@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { useTheme } from '@mui/system';
 import axios from 'axios';
+import FormikTextField from 'components/fields/FormikTextField';
 import Shell from 'components/shared/shell';
 import { Field, Form, Formik, useField } from 'formik';
 import { INewItem, newItemSchema } from 'models/new-item';
@@ -33,27 +34,6 @@ const initialValues: INewItem = {
   emailAddress: '',
   showEmailLink: false
 };
-
-type FormikFieldProps = { name: string };
-function FormikTextField({
-  name,
-  ...props
-}: TextFieldProps & FormikFieldProps) {
-  const [inputProps, metaProps, helperProps] = useField(name);
-
-  return (
-    <>
-      <TextField
-        value={inputProps.value}
-        onBlur={_ => helperProps.setTouched(true)}
-        onChange={e => helperProps.setValue(e.target.value)}
-        error={metaProps.touched && Boolean(metaProps.error)}
-        helperText={metaProps.touched && metaProps.error}
-        {...props}
-      />
-    </>
-  );
-}
 
 type ItemFormProps = {
   initialValues: IItem;

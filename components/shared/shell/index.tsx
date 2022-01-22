@@ -26,7 +26,7 @@ export default function Shell({
       }}
     >
       <NavBar />
-      <Grid item flex={1}>
+      <Grid item flex={1} position={'relative'}>
         {children}
       </Grid>
     </Grid>

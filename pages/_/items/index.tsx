@@ -1,4 +1,4 @@
-import { Add, Delete, Edit } from '@mui/icons-material';
+import { Add, Delete, Edit, Print } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
   Grid,
@@ -107,6 +107,22 @@ const ItemsPage: NextPage<ServerSideProps> = ({
                               {item.itemName}
                             </Link>
                             <Stack direction="row" gap=".5rem">
+                              <Link
+                                underline="none"
+                                href={`./items/${(item as any).id}/print`}
+                              >
+                                <Tooltip title="Print">
+                                  <IconButton
+                                    edge="end"
+                                    aria-label="print"
+                                    onClick={e => {
+                                      console.log(123);
+                                    }}
+                                  >
+                                    <Print />
+                                  </IconButton>
+                                </Tooltip>
+                              </Link>
                               <Link
                                 underline="none"
                                 href={'./items/' + (item as any).id}

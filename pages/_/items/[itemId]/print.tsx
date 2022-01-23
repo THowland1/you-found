@@ -17,6 +17,7 @@ import { FieldArray, Formik } from 'formik';
 import { IItem } from 'models/schema/item';
 import { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
+import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { z } from 'zod';
 import { toFormikValidationSchema } from 'zod-formik-adapter';
@@ -51,7 +52,7 @@ const generateInitialValues = (value: string): Schema => {
 };
 
 const ItemEditPage: NextPage<ServerSideProps> = ({ item, baseUrl }) => {
-  const itemHref = `https://${baseUrl}/${(item as any).id}`;
+  const itemHref = `${baseUrl}/${(item as any).id}`;
   const initialValues = generateInitialValues(itemHref);
   const onSubmit = (values: Schema) => {};
   const theme = useTheme<Theme>();
@@ -113,7 +114,7 @@ const ItemEditPage: NextPage<ServerSideProps> = ({ item, baseUrl }) => {
                     {arrayHelper => (
                       <>
                         {values.codes.map((code, i) => (
-                          <>
+                          <React.Fragment key={i}>
                             <Typography variant="h6">
                               Code {i + 1}
                               <IconButton
@@ -153,7 +154,7 @@ const ItemEditPage: NextPage<ServerSideProps> = ({ item, baseUrl }) => {
                                 )
                               }}
                             />
-                          </>
+                          </React.Fragment>
                         ))}
                         <Button
                           variant="outlined"
@@ -186,7 +187,7 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async ({
   req
 }) => {
   const itemId = z.string().parse(query.itemId);
-  const baseUrl = z.string().url().parse(req.headers.host);
+  const baseUrl = z.string().url().parse(process.env.ORIGIN);
   const item = await getItemById(itemId);
 
   if (item) {

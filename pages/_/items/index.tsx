@@ -169,21 +169,39 @@ const ItemsPage: NextPage<ServerSideProps> = ({
 
 export default ItemsPage;
 
+async function tryVerifyIdToken(idToken: string) {
+  try {
+    const token = await firebaseAdmin.auth().verifyIdToken(idToken);
+    return { success: true, token } as const;
+  } catch {
+    return { success: false } as const;
+  }
+}
+
 export const getServerSideProps: GetServerSideProps<
   ServerSideProps
 > = async ctx => {
   const cookies = nookies.get(ctx);
-  const token = await firebaseAdmin.auth().verifyIdToken(cookies.token);
+
+  const tokenAttempt = await tryVerifyIdToken(cookies.token);
+  if (!tokenAttempt.success) {
+    return {
+      redirect: {
+        destination: `/auth/refresh?redirecturl=/_/items`,
+        permanent: false
+      }
+    } as const;
+  }
+  const token = tokenAttempt.token;
 
   const items = await getItemsByEmailAddress(token.email!);
 
   if (items) {
-    return { props: { items, userEmailAddress: token.email! } };
+    return { props: { items, userEmailAddress: token.email! } } as const;
   } else {
     return {
-      redirect: { destination: '404', statusCode: 404, permanent: false },
-      props: {}
-    };
+      redirect: { destination: '404', statusCode: 301 }
+    } as const;
   }
 };
 

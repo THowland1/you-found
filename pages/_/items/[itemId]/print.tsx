@@ -28,11 +28,16 @@ type ServerSideProps = { item: IItem; baseUrl: string };
 const schema = z.object({
   gap: z.number().min(0),
   codes: z.array(
-    z.object({
-      value: z.string(),
-      width: z.number().min(0),
-      padding: z.number().min(0)
-    })
+    z
+      .object({
+        value: z.string(),
+        width: z.number().min(0),
+        padding: z.number().min(0)
+      })
+      .refine(data => data.padding * 2 < data.width, {
+        message: 'Padding cannot take up whole thing',
+        path: ['padding']
+      })
   )
 });
 
@@ -110,66 +115,72 @@ const ItemEditPage: NextPage<ServerSideProps> = ({ item, baseUrl }) => {
                       )
                     }}
                   />
-                  <FieldArray name="codes">
-                    {arrayHelper => (
-                      <>
-                        {values.codes.map((code, i) => (
-                          <React.Fragment key={i}>
-                            <Typography variant="h6">
-                              Code {i + 1}
-                              <IconButton
-                                onClick={() => {
-                                  arrayHelper.remove(i);
-                                }}
-                              >
-                                <RemoveCircleOutline />
-                              </IconButton>
-                            </Typography>
+                  <Stack>
+                    <Typography variant="h6">Codes</Typography>
+                    <Stack gap="1rem">
+                      <FieldArray name="codes">
+                        {arrayHelper => (
+                          <>
+                            {values.codes.map((code, i) => (
+                              <React.Fragment key={i}>
+                                <Typography variant="body1">
+                                  Code {i + 1}
+                                  <IconButton
+                                    onClick={() => {
+                                      arrayHelper.remove(i);
+                                    }}
+                                  >
+                                    <RemoveCircleOutline />
+                                  </IconButton>
+                                </Typography>
 
-                            <FormikTextField
-                              name={`codes.${i}.width`}
-                              label="width"
-                              InputLabelProps={{ shrink: true }}
-                              autoComplete="off"
-                              type="number"
-                              InputProps={{
-                                endAdornment: (
-                                  <InputAdornment position="end">
-                                    mm
-                                  </InputAdornment>
-                                )
+                                <FormikTextField
+                                  name={`codes.${i}.width`}
+                                  label="width"
+                                  InputLabelProps={{ shrink: true }}
+                                  autoComplete="off"
+                                  type="number"
+                                  InputProps={{
+                                    endAdornment: (
+                                      <InputAdornment position="end">
+                                        mm
+                                      </InputAdornment>
+                                    )
+                                  }}
+                                />
+                                <FormikTextField
+                                  name={`codes.${i}.padding`}
+                                  label="padding"
+                                  InputLabelProps={{ shrink: true }}
+                                  autoComplete="off"
+                                  type="number"
+                                  InputProps={{
+                                    endAdornment: (
+                                      <InputAdornment position="end">
+                                        mm
+                                      </InputAdornment>
+                                    )
+                                  }}
+                                />
+                              </React.Fragment>
+                            ))}
+                            <Button
+                              variant="outlined"
+                              onClick={_ => {
+                                arrayHelper.push({
+                                  value: itemHref,
+                                  width: 50,
+                                  padding: 5
+                                });
                               }}
-                            />
-                            <FormikTextField
-                              name={`codes.${i}.padding`}
-                              label="padding"
-                              InputLabelProps={{ shrink: true }}
-                              autoComplete="off"
-                              type="number"
-                              InputProps={{
-                                endAdornment: (
-                                  <InputAdornment position="end">
-                                    mm
-                                  </InputAdornment>
-                                )
-                              }}
-                            />
-                          </React.Fragment>
-                        ))}
-                        <Button
-                          variant="outlined"
-                          onClick={_ => {
-                            arrayHelper.push({ value: itemHref, width: 20 });
-                          }}
-                        >
-                          Add another
-                        </Button>
-                        <Button startIcon={<Print />} variant="contained">
-                          Print codes
-                        </Button>
-                      </>
-                    )}
-                  </FieldArray>
+                            >
+                              Add another
+                            </Button>
+                          </>
+                        )}
+                      </FieldArray>
+                    </Stack>
+                  </Stack>
                 </Stack>
               </Box>
             </Stack>

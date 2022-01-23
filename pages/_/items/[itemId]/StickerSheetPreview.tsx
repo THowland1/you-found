@@ -3,18 +3,33 @@ import {
   Page,
   PDFViewer,
   StyleSheet,
-  View
+  View,
+  Text
 } from '@react-pdf/renderer';
 import QRCode from 'qrcode.react';
 import { SvgComponent } from './svg-to-pdfsvg';
 
 // Create styles
 const styles = StyleSheet.create({
-  page: {
+  page: {},
+  header: {
+    borderColor: '#ccc',
+    borderTopWidth: 0,
+    borderLeftWidth: 0,
+    borderRightWidth: 0,
+    borderBottomWidth: '.5mm',
+    width: '100%'
+  },
+  headerText: {
+    margin: '1cm auto',
+    width: '100%'
+  },
+  main: {
     flexDirection: 'row',
     display: 'flex',
     flexWrap: 'wrap'
   },
+
   section: {
     borderColor: '#ccc',
     borderStyle: 'solid',
@@ -42,21 +57,39 @@ const StickerSheetPreview = ({ codes, gap }: StickerSheetPreviewProps) => (
       >
         <Document>
           <Page size="A4" style={styles.page}>
-            {codes.map(({ value, width, padding }, i) => (
-              <View
-                style={[
-                  styles.section,
-                  {
-                    padding: `${padding}mm`,
-                    height: `${width}mm`,
-                    width: `${width}mm`,
-                    margin: `${gap / 2}mm`
-                  }
-                ]}
-              >
-                <QrCodeSvg value={value} />
+            <View style={styles.header}>
+              <View style={styles.headerText}>
+                <Text style={{ fontSize: '1cm', textAlign: 'center' }}>
+                  Your stickers
+                </Text>
+                <Text
+                  style={{
+                    marginTop: '.25cm',
+                    color: 'grey',
+                    textAlign: 'center'
+                  }}
+                >
+                  Print, cut, and stick to your valuables
+                </Text>
               </View>
-            ))}
+            </View>
+            <View style={styles.main}>
+              {codes.map(({ value, width, padding }, i) => (
+                <View
+                  style={[
+                    styles.section,
+                    {
+                      padding: `${padding}mm`,
+                      height: `${width}mm`,
+                      width: `${width}mm`,
+                      margin: `${gap / 2}mm`
+                    }
+                  ]}
+                >
+                  <QrCodeSvg value={value} />
+                </View>
+              ))}
+            </View>
           </Page>
         </Document>
       </PDFViewer>

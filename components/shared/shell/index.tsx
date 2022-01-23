@@ -21,7 +21,7 @@ export default function Shell({
         inset: 0,
         background: honeycomb(
           theme.palette.background.default,
-          `${theme.palette.primary.dark}09`
+          `${theme.palette.primary.dark}0a`
         )
       }}
     >

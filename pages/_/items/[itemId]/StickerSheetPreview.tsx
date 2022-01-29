@@ -13,11 +13,11 @@ import { SvgComponent } from './svg-to-pdfsvg';
 const styles = StyleSheet.create({
   page: {},
   header: {
-    borderColor: '#ccc',
+    borderColor: '#000',
     borderTopWidth: 0,
     borderLeftWidth: 0,
     borderRightWidth: 0,
-    borderBottomWidth: '.5mm',
+    borderBottomWidth: '.1mm',
     width: '100%'
   },
   headerText: {
@@ -31,9 +31,9 @@ const styles = StyleSheet.create({
   },
 
   section: {
-    borderColor: '#ccc',
+    borderColor: '#000',
     borderStyle: 'solid',
-    borderWidth: '.5mm'
+    borderWidth: '.1mm'
   }
 });
 

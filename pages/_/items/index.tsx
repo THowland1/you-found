@@ -22,7 +22,8 @@ import {
   DialogContentText,
   DialogTitle,
   Link,
-  Box
+  Box,
+  ListItemIcon
 } from '@mui/material';
 import NextLink from 'next/link';
 import axios from 'axios';
@@ -35,11 +36,18 @@ import { GetServerSideProps, NextPage } from 'next';
 import nookies from 'nookies';
 import React, { useState } from 'react';
 import { useQuery } from 'react-query';
+import QRCode from 'qrcode.react';
+import { z } from 'zod';
 
-type ServerSideProps = { items: IItem[]; userEmailAddress: string };
+type ServerSideProps = {
+  items: IItem[];
+  userEmailAddress: string;
+  baseUrl: string;
+};
 const ItemsPage: NextPage<ServerSideProps> = ({
   items: initialItems,
-  userEmailAddress
+  userEmailAddress,
+  baseUrl
 }) => {
   const theme = useTheme();
 
@@ -103,46 +111,54 @@ const ItemsPage: NextPage<ServerSideProps> = ({
               <List sx={{ width: '100%' }}>
                 {items.map((item, i) => (
                   <React.Fragment key={i}>
-                    <ListItem disableGutters>
-                      <ListItemButton>
-                        <ListItemText sx={{ paddingX: '1rem' }}>
-                          <Stack direction="row" alignItems="center">
-                            <NextLink href={`/${(item as any).id}`} passHref>
-                              <Link
-                                color={theme.palette.text.primary}
-                                underline="hover"
-                                width={'100%'}
-                              >
-                                {item.itemName}
-                              </Link>
-                            </NextLink>
-                            <Stack direction="row" gap=".5rem">
-                              <NextLink
-                                href={'./items/' + (item as any).id}
-                                passHref
-                              >
-                                <Tooltip title="Edit">
-                                  <IconButton edge="end" aria-label="edit">
-                                    <Edit />
-                                  </IconButton>
-                                </Tooltip>
-                              </NextLink>
-                              <Tooltip title="Delete">
-                                <IconButton
-                                  edge="end"
-                                  aria-label="delete"
-                                  onClick={e => {
-                                    e.preventDefault();
-                                    setIdToDelete((item as any).id);
-                                  }}
-                                >
-                                  <Delete />
-                                </IconButton>
-                              </Tooltip>
-                            </Stack>
-                          </Stack>
-                        </ListItemText>
-                      </ListItemButton>
+                    <ListItem
+                      disablePadding
+                      secondaryAction={
+                        <Stack direction="row" gap=".5rem">
+                          <NextLink
+                            href={'./items/' + (item as any).id}
+                            passHref
+                          >
+                            <Tooltip title="Edit">
+                              <IconButton edge="end" aria-label="edit">
+                                <Edit />
+                              </IconButton>
+                            </Tooltip>
+                          </NextLink>
+                          <Tooltip title="Delete">
+                            <IconButton
+                              edge="end"
+                              aria-label="delete"
+                              onClick={e => {
+                                e.preventDefault();
+                                setIdToDelete((item as any).id);
+                              }}
+                            >
+                              <Delete />
+                            </IconButton>
+                          </Tooltip>
+                        </Stack>
+                      }
+                    >
+                      <NextLink href={`/${(item as any).id}`} passHref>
+                        <Link
+                          color={theme.palette.text.primary}
+                          underline="hover"
+                          width={'100%'}
+                        >
+                          <ListItemButton>
+                            <ListItemIcon>
+                              <QRCode
+                                value={`${baseUrl}/${(item as any).id}`}
+                                renderAs="svg"
+                                height={'2rem'}
+                                width={'2rem'}
+                              />
+                            </ListItemIcon>
+                            <ListItemText>{item.itemName}</ListItemText>
+                          </ListItemButton>
+                        </Link>
+                      </NextLink>
                     </ListItem>
                   </React.Fragment>
                 ))}
@@ -169,6 +185,8 @@ async function tryVerifyIdToken(idToken: string) {
 export const getServerSideProps: GetServerSideProps<
   ServerSideProps
 > = async ctx => {
+  const baseUrl = z.string().url().parse(process.env.ORIGIN);
+
   const cookies = nookies.get(ctx);
 
   const tokenAttempt = await tryVerifyIdToken(cookies.token);
@@ -185,7 +203,9 @@ export const getServerSideProps: GetServerSideProps<
   const items = await getItemsByEmailAddress(token.email!);
 
   if (items) {
-    return { props: { items, userEmailAddress: token.email! } } as const;
+    return {
+      props: { items, userEmailAddress: token.email!, baseUrl }
+    } as const;
   } else {
     return {
       redirect: { destination: '404', statusCode: 301 }

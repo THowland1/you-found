@@ -4,12 +4,23 @@ import { useTheme } from '@mui/system';
 import Shell from 'components/shared/shell';
 import { NavBar } from 'components/shared/shell/NavBar';
 import Head from 'next/head';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { honeycomb } from 'styles/backgrounds';
 import NextLink from 'next/link';
+import { tryGetAuthToken } from 'utils/try-get-auth-token';
+import { GetServerSideProps, NextPage } from 'next';
+import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier';
+import { useAuth } from 'components/shared/auth/useAuth';
 
-export default function Home() {
+type ServerSideProps = { token: DecodedIdToken | null };
+const Home: NextPage<ServerSideProps> = ({ token }) => {
+  const [isLoggedIn, setIsLoggedIn] = useState(Boolean(token));
   const theme = useTheme<Theme>();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    setIsLoggedIn(Boolean(user));
+  }, [user]);
   return (
     <>
       <Head>
@@ -34,16 +45,45 @@ export default function Home() {
             h4Text="Register a new code"
             body1Text="Sign yourself up to be contacted if someone finds your stuff"
           />
-          <Section
-            href="/_/items"
-            h4Text="See your codes"
-            body1Text="Edit what people see when they scan your code(s) or check if they have been spotted"
-          />
+          {isLoggedIn && (
+            <Section
+              href="/_/items"
+              h4Text="See your codes"
+              body1Text="Edit what people see when they scan your code(s) or check if they have been spotted"
+            />
+          )}
         </Grid>
       </Shell>
     </>
   );
-}
+};
+
+export default Home;
+
+export const getServerSideProps: GetServerSideProps<
+  ServerSideProps
+> = async ctx => {
+  const tokenAttempt = await tryGetAuthToken(ctx);
+
+  if (tokenAttempt.success) {
+    return { props: { token: tokenAttempt.token } };
+  }
+
+  if (tokenAttempt.reason === 'expired') {
+    return {
+      redirect: {
+        destination: `/auth/refresh?redirecturl=/`,
+        permanent: false
+      }
+    };
+  }
+
+  return {
+    props: {
+      token: null
+    }
+  };
+};
 
 export function Section({
   href,

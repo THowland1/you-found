@@ -99,20 +99,7 @@ const ItemPage: NextPage<ServerSideProps> = ({ item }) => {
                 </Button>
               </Link>
             </Grid>
-            <Grid item>
-              <Link href={'https://m.me:' + item.phoneNumber} underline="none">
-                <Button
-                  fullWidth
-                  variant="contained"
-                  startIcon={
-                    <FontAwesomeIcon icon={faFacebookMessenger} size="2x" />
-                  }
-                  sx={{ paddingY: '1rem' }}
-                >
-                  Message me on Messenger
-                </Button>
-              </Link>
-            </Grid>
+
             <Grid item>
               <Link href={'mailto:' + item.emailAddress} underline="none">
                 <Button

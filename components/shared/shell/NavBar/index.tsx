@@ -19,6 +19,7 @@ import { v4 } from 'uuid';
 import { AuthPopup } from './AuthPopup';
 import { useTheme } from '@mui/system';
 import { AccountCircle } from '@mui/icons-material';
+import NextLink from 'next/link';
 
 export const NavBar: FC = () => {
   const [popupOpen, setPopupOpen] = React.useState(false);
@@ -35,11 +36,13 @@ export const NavBar: FC = () => {
           color="inherit"
           aria-label="menu"
         ></IconButton>
-        <Link color="inherit" underline="hover" href="/">
-          <Typography variant="h4">
-            <em>YouFound</em>
-          </Typography>
-        </Link>
+        <NextLink href="/" passHref>
+          <Link color="inherit" underline="hover">
+            <Typography variant="h4">
+              <em>YouFound</em>
+            </Typography>
+          </Link>
+        </NextLink>
         <Box sx={{ flexGrow: 1 }} />
         {user ? (
           <BasicMenu buttonText={user.displayName || 'My account'}>

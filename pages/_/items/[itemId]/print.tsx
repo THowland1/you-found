@@ -1,5 +1,4 @@
 import { RemoveCircleOutline } from '@mui/icons-material';
-import Print from '@mui/icons-material/Print';
 import {
   Box,
   Button,
@@ -21,7 +20,7 @@ import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { z } from 'zod';
 import { toFormikValidationSchema } from 'zod-formik-adapter';
-import StickerSheetPreview from './StickerSheetPreview';
+import StickerSheetPreview from 'components/StickerSheetPreview';
 
 type ServerSideProps = { item: IItem; baseUrl: string };
 
@@ -85,7 +84,7 @@ const ItemEditPage: NextPage<ServerSideProps> = ({ item, baseUrl }) => {
                   cursor: 'move'
                 }}
               >
-                <StickerSheetPreview codes={values.codes} gap={values.gap} />
+                {/* <StickerSheetPreview codes={values.codes} gap={values.gap} /> */}
               </Box>
 
               <Box

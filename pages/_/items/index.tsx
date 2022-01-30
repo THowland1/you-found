@@ -1,4 +1,4 @@
-import { Add, Delete, Edit, Print } from '@mui/icons-material';
+import { Add, Delete, Edit, Print, QrCode2 } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
   Grid,
@@ -9,7 +9,6 @@ import {
   useTheme,
   Paper,
   Typography,
-  Link,
   CardHeader,
   Card,
   CardContent,
@@ -21,8 +20,11 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  DialogTitle
+  DialogTitle,
+  Link,
+  Box
 } from '@mui/material';
+import NextLink from 'next/link';
 import axios from 'axios';
 import { Dump } from 'components/shared/Dump';
 import Shell from 'components/shared/shell';
@@ -83,11 +85,18 @@ const ItemsPage: NextPage<ServerSideProps> = ({
             <CardHeader
               title="Your items"
               action={
-                <Link underline="none" href="/_/new">
-                  <Button variant="contained" startIcon={<Add />}>
-                    Add new
-                  </Button>
-                </Link>
+                <Stack gap={1} direction="row">
+                  <NextLink href="/me/print" passHref>
+                    <Button variant="outlined" startIcon={<QrCode2 />}>
+                      Print QR codes
+                    </Button>
+                  </NextLink>
+                  <NextLink href="/_/new" passHref>
+                    <Button variant="contained" startIcon={<Add />}>
+                      Add new
+                    </Button>
+                  </NextLink>
+                </Stack>
               }
             />
             <CardContent sx={{ padding: 0 }}>
@@ -98,47 +107,26 @@ const ItemsPage: NextPage<ServerSideProps> = ({
                       <ListItemButton>
                         <ListItemText sx={{ paddingX: '1rem' }}>
                           <Stack direction="row" alignItems="center">
-                            <Link
-                              href={`/${(item as any).id}`}
-                              underline="hover"
-                              color={'inherit'}
-                              width={'100%'}
-                            >
-                              {item.itemName}
-                            </Link>
-                            <Stack direction="row" gap=".5rem">
+                            <NextLink href={`/${(item as any).id}`} passHref>
                               <Link
-                                underline="none"
-                                href={`./items/${(item as any).id}/print`}
+                                color={theme.palette.text.primary}
+                                underline="hover"
+                                width={'100%'}
                               >
-                                <Tooltip title="Print">
-                                  <IconButton
-                                    edge="end"
-                                    aria-label="print"
-                                    onClick={e => {
-                                      console.log(123);
-                                    }}
-                                  >
-                                    <Print />
-                                  </IconButton>
-                                </Tooltip>
+                                {item.itemName}
                               </Link>
-                              <Link
-                                underline="none"
+                            </NextLink>
+                            <Stack direction="row" gap=".5rem">
+                              <NextLink
                                 href={'./items/' + (item as any).id}
+                                passHref
                               >
                                 <Tooltip title="Edit">
-                                  <IconButton
-                                    edge="end"
-                                    aria-label="edit"
-                                    onClick={e => {
-                                      console.log(123);
-                                    }}
-                                  >
+                                  <IconButton edge="end" aria-label="edit">
                                     <Edit />
                                   </IconButton>
                                 </Tooltip>
-                              </Link>
+                              </NextLink>
                               <Tooltip title="Delete">
                                 <IconButton
                                   edge="end"

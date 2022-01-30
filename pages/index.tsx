@@ -6,6 +6,7 @@ import { NavBar } from 'components/shared/shell/NavBar';
 import Head from 'next/head';
 import React from 'react';
 import { honeycomb } from 'styles/backgrounds';
+import NextLink from 'next/link';
 
 export default function Home() {
   const theme = useTheme<Theme>();
@@ -56,32 +57,34 @@ export function Section({
   const theme = useTheme<Theme>();
 
   return (
-    <Link underline="none" href={href} color={'textPrimary'}>
-      <Grid
-        container
-        sx={{
-          background: theme.palette.background.default,
-          padding: '1rem',
-          border: `solid 1px ${theme.palette.grey[300]}`,
-          borderRadius: '.5rem',
-          boxShadow: theme.shadows[1],
-          '&:hover': {
-            boxShadow: theme.shadows[4]
-          }
-        }}
-      >
-        <Grid xs item>
-          <Typography variant="h4">{h4Text}</Typography>
-          <Typography variant="body1" color="GrayText">
-            {body1Text}
-          </Typography>
+    <NextLink href={href} passHref>
+      <Link underline="none" color={'textPrimary'}>
+        <Grid
+          container
+          sx={{
+            background: theme.palette.background.default,
+            padding: '1rem',
+            border: `solid 1px ${theme.palette.grey[300]}`,
+            borderRadius: '.5rem',
+            boxShadow: theme.shadows[1],
+            '&:hover': {
+              boxShadow: theme.shadows[4]
+            }
+          }}
+        >
+          <Grid xs item>
+            <Typography variant="h4">{h4Text}</Typography>
+            <Typography variant="body1" color="GrayText">
+              {body1Text}
+            </Typography>
+          </Grid>
+          <Grid item>
+            <IconButton>
+              <ArrowForward />
+            </IconButton>
+          </Grid>
         </Grid>
-        <Grid item>
-          <IconButton>
-            <ArrowForward />
-          </IconButton>
-        </Grid>
-      </Grid>
-    </Link>
+      </Link>
+    </NextLink>
   );
 }

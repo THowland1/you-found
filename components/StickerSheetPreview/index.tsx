@@ -40,7 +40,10 @@ const styles = StyleSheet.create({
 // Create Document Component
 type StickerSheetPreviewProps = {
   codes: {
-    value: string;
+    item: {
+      itemName: string;
+      itemHref: string;
+    };
     width: number;
     padding: number;
   }[];
@@ -74,19 +77,37 @@ const StickerSheetPreview = ({ codes, gap }: StickerSheetPreviewProps) => (
               </View>
             </View>
             <View style={styles.main}>
-              {codes.map(({ value, width, padding }, i) => (
+              {codes.map(({ item, width, padding }, i) => (
                 <View
                   style={[
-                    styles.section,
                     {
-                      padding: `${padding}mm`,
-                      height: `${width}mm`,
                       width: `${width}mm`,
+
                       margin: `${gap / 2}mm`
                     }
                   ]}
                 >
-                  <QrCodeSvg value={value} />
+                  <Text
+                    style={{
+                      marginTop: '.25cm',
+                      width: '100%',
+                      color: 'grey',
+                      textAlign: 'center'
+                    }}
+                  >
+                    {item.itemName}
+                  </Text>
+                  <View
+                    style={[
+                      styles.section,
+                      {
+                        padding: `${padding}mm`,
+                        height: `${width}mm`
+                      }
+                    ]}
+                  >
+                    <QrCodeSvg value={item.itemHref} />
+                  </View>
                 </View>
               ))}
             </View>

@@ -33,53 +33,11 @@ import { getItemsByEmailAddress } from 'data-layer/getItemsByEmailAddress';
 import { Dump } from 'components/shared/Dump';
 import { v4 } from 'uuid';
 import FormikSelectField from 'components/fields/FormikSelectField';
+import PrintForm from 'components/PrintForm';
 
 type ServerSideProps = { items: IItem[]; baseUrl: string };
 
-const itemSchema = z.object({
-  itemName: z.string(),
-  itemHref: z.string()
-});
-
-const schema = z.object({
-  gap: z.number().min(0),
-  codes: z.array(
-    z
-      .object({
-        item: itemSchema,
-        width: z.number().min(0),
-        padding: z.number().min(0)
-      })
-      .refine(data => data.padding * 2 < data.width, {
-        message: 'Padding cannot take up whole thing',
-        path: ['padding']
-      })
-  )
-});
-
-type Schema = z.infer<typeof schema>;
-type ItemSchema = z.infer<typeof itemSchema>;
-
-const getItemUrl = (baseUrl: string, item: IItem) =>
-  `${baseUrl}/${(item as any).id}`;
-
-const generateInitialValues = (items: IItem[], baseUrl: string): Schema => {
-  return {
-    gap: 10,
-    codes: items.map(item => ({
-      item: {
-        ...item,
-        itemHref: getItemUrl(baseUrl, item)
-      },
-      width: 50,
-      padding: 5
-    }))
-  };
-};
-
 const ItemEditPage: NextPage<ServerSideProps> = ({ items, baseUrl }) => {
-  const initialValues = generateInitialValues(items, baseUrl);
-  const onSubmit = (values: Schema) => {};
   const theme = useTheme<Theme>();
 
   if (!items.length) {
@@ -87,165 +45,15 @@ const ItemEditPage: NextPage<ServerSideProps> = ({ items, baseUrl }) => {
   }
 
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={toFormikValidationSchema(schema)}
-      onSubmit={values => onSubmit(values)}
-    >
-      {({ values }) => (
-        <>
-          <Head>
-            <title>Print QR code</title>
-            <link rel="icon" href="/favicon.ico" />
-          </Head>
-          <Shell>
-            <Stack position={'absolute'} sx={{ inset: 0 }} direction={'row'}>
-              <Box
-                flex={1}
-                overflow="auto"
-                padding="2rem"
-                sx={{
-                  backgroundColor: theme.palette.grey[300],
-                  cursor: 'move'
-                }}
-              >
-                <StickerSheetPreview codes={values.codes} gap={values.gap} />
-              </Box>
-
-              <Box
-                sx={{
-                  backgroundColor: 'white',
-                  borderLeft: `solid 1px ${theme.palette.grey[200]}`,
-                  padding: '1rem',
-                  boxShadow: theme.shadows[2],
-                  maxWidth: '24rem',
-                  overflowX: 'hidden'
-                }}
-              >
-                <Stack gap="1rem">
-                  <Typography variant="h4">Print out codes</Typography>
-                  <Typography variant="h6">Page</Typography>
-
-                  <FormikTextField
-                    name={`gap`}
-                    size="small"
-                    label="gap"
-                    InputLabelProps={{ shrink: true }}
-                    autoComplete="off"
-                    fullWidth
-                    type="number"
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">mm</InputAdornment>
-                      )
-                    }}
-                  />
-                  <Stack>
-                    <Typography variant="h6">Codes</Typography>
-                    <Stack gap="1rem">
-                      <FieldArray name="codes">
-                        {arrayHelper => (
-                          <>
-                            {values.codes.map((code, i) => (
-                              <React.Fragment key={i}>
-                                <Typography variant="body1">
-                                  Code {i + 1}
-                                  <IconButton
-                                    onClick={() => {
-                                      arrayHelper.remove(i);
-                                    }}
-                                  >
-                                    <RemoveCircleOutline />
-                                  </IconButton>
-                                </Typography>
-
-                                <FormikSelectField
-                                  name={`codes.${i}.item`}
-                                  label="Item"
-                                  size="small"
-                                  mapValue={{
-                                    formikToMui: (formikValue: any) =>
-                                      items.findIndex(
-                                        (itemm: any) =>
-                                          itemm.id === formikValue.id
-                                      ),
-                                    muiToFormik: (muiValue: number) => ({
-                                      ...items[muiValue],
-                                      itemHref: getItemUrl(
-                                        baseUrl,
-                                        items[muiValue]
-                                      )
-                                    })
-                                  }}
-                                >
-                                  {items.map((itemm, ii) => (
-                                    <MenuItem key={ii} value={ii}>
-                                      {itemm.itemName}
-                                    </MenuItem>
-                                  ))}
-                                </FormikSelectField>
-
-                                <Stack direction="row" gap="1rem">
-                                  <FormikTextField
-                                    name={`codes.${i}.width`}
-                                    size="small"
-                                    label="Size"
-                                    InputLabelProps={{ shrink: true }}
-                                    autoComplete="off"
-                                    type="number"
-                                    InputProps={{
-                                      endAdornment: (
-                                        <InputAdornment position="end">
-                                          mm
-                                        </InputAdornment>
-                                      )
-                                    }}
-                                  />
-                                  <FormikTextField
-                                    name={`codes.${i}.padding`}
-                                    size="small"
-                                    label="Padding"
-                                    InputLabelProps={{ shrink: true }}
-                                    autoComplete="off"
-                                    type="number"
-                                    InputProps={{
-                                      endAdornment: (
-                                        <InputAdornment position="end">
-                                          mm
-                                        </InputAdornment>
-                                      )
-                                    }}
-                                  />
-                                </Stack>
-                              </React.Fragment>
-                            ))}
-                            <Button
-                              variant="outlined"
-                              onClick={_ => {
-                                arrayHelper.push({
-                                  item: {
-                                    ...items[0],
-                                    itemHref: getItemUrl(baseUrl, items[0])
-                                  },
-                                  width: 50,
-                                  padding: 5
-                                });
-                              }}
-                            >
-                              Add another
-                            </Button>
-                          </>
-                        )}
-                      </FieldArray>
-                    </Stack>
-                  </Stack>
-                </Stack>
-              </Box>
-            </Stack>
-          </Shell>
-        </>
-      )}
-    </Formik>
+    <>
+      <Head>
+        <title>Print QR code</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <Shell>
+        <PrintForm items={items} baseUrl={baseUrl} />
+      </Shell>
+    </>
   );
 };
 

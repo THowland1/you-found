@@ -7,33 +7,15 @@ import {
   FormControlLabelProps,
   Grid,
   Paper,
-  TextField,
-  TextFieldProps,
   Typography
 } from '@mui/material';
 import { useTheme } from '@mui/system';
-import axios from 'axios';
 import FormikTextField from 'components/fields/FormikTextField';
 import Shell from 'components/shared/shell';
-import { Field, Form, Formik, useField } from 'formik';
-import { INewItem, newItemSchema } from 'models/new-item';
+import { Field, Form, Formik } from 'formik';
+import { newItemSchema } from 'models/new-item';
 import { IItem } from 'models/schema/item';
-import { NextPage } from 'next';
-import Head from 'next/head';
 import { toFormikValidationSchema } from 'zod-formik-adapter';
-
-const initialValues: INewItem = {
-  itemName: '',
-  headline: '',
-  message: '',
-  phoneNumber: '',
-  showWhatsAppLink: false,
-  showPhoneCallLink: false,
-  showSMSLink: false,
-
-  emailAddress: '',
-  showEmailLink: false
-};
 
 type ItemFormProps = {
   initialValues: IItem;
@@ -73,7 +55,7 @@ function ItemForm({ initialValues, onSubmit }: ItemFormProps): JSX.Element {
                       </Box>
                     </Grid>
                   </Paper>
-                  <Paper>
+                  {/* <Paper>
                     <Grid
                       container
                       gap="1rem"
@@ -102,7 +84,7 @@ function ItemForm({ initialValues, onSubmit }: ItemFormProps): JSX.Element {
                         />
                       </Box>
                     </Grid>
-                  </Paper>
+                  </Paper> */}
                   <Paper>
                     <Grid
                       container

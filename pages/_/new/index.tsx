@@ -11,6 +11,7 @@ import {
   DialogTitle,
   FormControlLabel,
   FormControlLabelProps,
+  Grow,
   IconButton,
   Stack
 } from '@mui/material';
@@ -157,7 +158,6 @@ export function SuccessDialog({ createdItemId, origin }: AlertDialogProps) {
   );
 }
 
-// FIND OUT A WAY TO CLOSE THE DIALOG
 type PrintDialogProps = {
   open: boolean;
   setOpen: (state: boolean) => any;
@@ -166,7 +166,12 @@ type PrintDialogProps = {
 };
 function PrintDialog({ open, setOpen, item, baseUrl }: PrintDialogProps) {
   return (
-    <Dialog fullScreen open={open} sx={{ inset: { sm: '1rem' } }}>
+    <Dialog
+      TransitionComponent={Grow}
+      fullScreen
+      open={open}
+      sx={{ inset: { sm: '1rem' } }}
+    >
       <DialogContent sx={{ position: 'relative' }}>
         <IconButton
           sx={{ position: 'absolute', top: '1rem', right: '1rem', zIndex: 1 }}

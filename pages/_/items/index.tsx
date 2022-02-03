@@ -29,7 +29,7 @@ import NextLink from 'next/link';
 import axios from 'axios';
 import { Dump } from 'components/shared/Dump';
 import Shell from 'components/shared/shell';
-import { getItemsByEmailAddress } from 'data-layer/getItemsByEmailAddress';
+import { getItemsByFirebaseUserId } from 'data-layer/getItemsByFirebaseUserId';
 import { firebaseAdmin } from 'middleware/firebaseAdmin';
 import { IItem } from 'models/schema/item';
 import { GetServerSideProps, NextPage } from 'next';
@@ -200,7 +200,7 @@ export const getServerSideProps: GetServerSideProps<
   }
   const token = tokenAttempt.token;
 
-  const items = await getItemsByEmailAddress(token.email!);
+  const items = await getItemsByFirebaseUserId(token.uid!);
 
   if (items) {
     return {

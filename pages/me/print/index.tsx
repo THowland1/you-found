@@ -29,7 +29,7 @@ import { toFormikValidationSchema } from 'zod-formik-adapter';
 import StickerSheetPreview from 'components/StickerSheetPreview';
 import nookies from 'nookies';
 import { firebaseAdmin } from 'middleware/firebaseAdmin';
-import { getItemsByEmailAddress } from 'data-layer/getItemsByEmailAddress';
+import { getItemsByFirebaseUserId } from 'data-layer/getItemsByFirebaseUserId';
 import { Dump } from 'components/shared/Dump';
 import { v4 } from 'uuid';
 import FormikSelectField from 'components/fields/FormikSelectField';
@@ -85,7 +85,7 @@ export const getServerSideProps: GetServerSideProps<
   }
   const token = tokenAttempt.token;
 
-  const items = await getItemsByEmailAddress(token.email!);
+  const items = await getItemsByFirebaseUserId(token.uid!);
 
   if (items) {
     return { props: { items, baseUrl } } as const;

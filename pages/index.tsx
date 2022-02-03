@@ -63,7 +63,7 @@ export default Home;
 export const getServerSideProps: GetServerSideProps<
   ServerSideProps
 > = async ctx => {
-  const tokenAttempt = await tryGetAuthToken(ctx);
+  const tokenAttempt = await tryGetAuthToken(['getServerSideProps', ctx]);
 
   if (tokenAttempt.success) {
     return { props: { token: tokenAttempt.token } };

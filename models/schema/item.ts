@@ -50,6 +50,9 @@ export interface IItemPage {
 }
 
 export interface IItem {
+  itemId: number;
+  itemSlug: string;
+  firebaseUserId: string;
   emailAddress: string;
   headline: string;
   itemName: string;
@@ -62,6 +65,9 @@ export interface IItem {
 }
 
 export const IUserProps: { [key in keyof IItem]: key } = {
+  itemId: 'itemId',
+  itemSlug: 'itemSlug',
+  firebaseUserId: 'firebaseUserId',
   emailAddress: 'emailAddress',
   headline: 'headline',
   itemName: 'itemName',
@@ -77,6 +83,9 @@ export type IItemDocument = IMongooseDocument<IItem>;
 export type IItemRef = IMongooseRef<IItemDocument>;
 
 const ItemSchema: Schema = new Schema({
+  itemId: { type: String, required: true },
+  itemSlug: { type: String, required: true },
+  firebaseUserId: { type: String, required: true },
   emailAddress: { type: String, required: true },
   headline: { type: String, required: true },
   itemName: { type: String, required: true },

@@ -20,13 +20,14 @@ import ItemForm from 'components/items/ItemForm';
 import { INewItem } from 'models/new-item';
 import { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import QRCode from 'qrcode.react';
 import { z } from 'zod';
 import { IItem } from 'models/schema/item';
 import PrintForm, { PrintFormItemSchema } from 'components/PrintForm';
 import { Close } from '@mui/icons-material';
-
+import Link from 'next/link';
+import { FormikProps } from 'formik';
 const initialValues: INewItem = {
   itemName: '',
   headline: '!',

@@ -17,6 +17,11 @@
     "incremental": true,
     "downlevelIteration": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/_/items/[itemId]"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "pages/_/items/[itemSlug]"
+  ],
   "exclude": ["node_modules"]
 }

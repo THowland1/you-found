@@ -13,22 +13,24 @@ import { useTheme } from '@mui/system';
 import FormikTextField from 'components/fields/FormikTextField';
 import Shell from 'components/shared/shell';
 import { Field, Form, Formik } from 'formik';
-import { newItemSchema } from 'models/new-item';
+import { INewItem, newItemSchema } from 'models/new-item';
 import { IItem } from 'models/schema/item';
 import { toFormikValidationSchema } from 'zod-formik-adapter';
 
-type ItemFormProps = {
-  initialValues: IItem;
-  onSubmit: (val: IItem) => any;
+type ItemFormProps<T extends IItem | INewItem> = {
+  initialValues: T;
+  onSubmit: (val: T) => any;
 };
-function ItemForm({ initialValues, onSubmit }: ItemFormProps): JSX.Element {
+function ItemForm<T extends IItem | INewItem>(
+  props: ItemFormProps<T>
+): JSX.Element {
   const theme = useTheme();
   return (
     <>
       <Formik
-        initialValues={initialValues}
+        initialValues={props.initialValues}
         validationSchema={toFormikValidationSchema(newItemSchema)}
-        onSubmit={values => onSubmit(values)}
+        onSubmit={values => props.onSubmit(values)}
       >
         {({ values, submitForm, isSubmitting }) => (
           <Form>

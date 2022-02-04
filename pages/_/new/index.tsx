@@ -41,15 +41,15 @@ const initialValues: INewItem = {
 };
 
 const NewPage: NextPage<ServerSideProps> = ({ origin }) => {
-  const [createdItemId, setCreatedItemId] = useState<string | null>(null);
+  const [createdItem, setCreatedItem] = useState<IItem | null>(null);
   const postNewItem = async (values: INewItem) => {
-    const response = await axios.post<{ itemId: string }>('/api/items', {
+    const response = await axios.post<IItem>('/api/items', {
       ...values,
       headline: `Hi, you've found my ${values.itemName}!`,
       message:
         'I would apprciate if you would reach out on via one of the methods below!'
     });
-    setCreatedItemId(response.data.itemId);
+    setCreatedItem(response.data);
   };
 
   return (
@@ -58,13 +58,8 @@ const NewPage: NextPage<ServerSideProps> = ({ origin }) => {
         <title>Register new code</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <fieldset disabled={Boolean(createdItemId)}>
-        <ItemForm initialValues={initialValues} onSubmit={postNewItem} />
-      </fieldset>
-      <SuccessDialog
-        createdItemId={createdItemId}
-        origin={origin}
-      ></SuccessDialog>
+      <ItemForm initialValues={initialValues} onSubmit={postNewItem} />
+      <SuccessDialog createdItem={createdItem} origin={origin}></SuccessDialog>
     </>
   );
 };
@@ -83,10 +78,10 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async ({
 };
 
 type AlertDialogProps = {
-  createdItemId: string | null;
+  createdItem: IItem | null;
   origin: string;
 };
-export function SuccessDialog({ createdItemId, origin }: AlertDialogProps) {
+export function SuccessDialog({ createdItem, origin }: AlertDialogProps) {
   const [loading, setLoading] = useState(false);
   const [printDialogOpen, setPrintDialogOpen] = useState(false);
 
@@ -94,66 +89,62 @@ export function SuccessDialog({ createdItemId, origin }: AlertDialogProps) {
     <>
       <div>
         <Dialog
-          open={!!createdItemId}
+          open={!!createdItem}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
           <DialogTitle id="alert-dialog-title">
             Your QR has been created
           </DialogTitle>
-          <DialogContent>
-            <DialogContentText
-              sx={{ maxWidth: '30rem' }}
-              id="alert-dialog-description"
-            >
-              <Stack gap={2}>
-                <Stack direction="row" gap={2} alignItems={'center'}>
-                  <QRCode
-                    height={'auto'}
-                    value={`${origin}/${createdItemId}`}
-                    renderAs="svg"
-                  />
-                  <Box>
+          <DialogContent
+            sx={{ maxWidth: '32rem' }}
+            id="alert-dialog-description"
+          >
+            <Stack gap={2}>
+              <Stack direction="row" gap={2} alignItems={'center'}>
+                <QRCode
+                  height={'auto'}
+                  value={`${origin}/${createdItem?.itemSlug}`}
+                  renderAs="svg"
+                />
+                <Box>
+                  <DialogContentText>
                     Congratulations! Your QR code has been created!
                     <br />
                     Feel free to stick it on things to let people return them to
                     you if they get lost
-                  </Box>
-                </Stack>
-                <Stack gap={1}>
-                  <Button
-                    variant="outlined"
-                    onClick={() => setPrintDialogOpen(true)}
-                  >
-                    Print this code out
-                  </Button>
-                  <Button disabled variant="outlined">
-                    Stylise the page
-                  </Button>
-                  <Button disabled variant="outlined">
-                    Create another
-                  </Button>
-                  <Button disabled variant="outlined">
-                    See all your codes
-                  </Button>
-                </Stack>
+                  </DialogContentText>
+                </Box>
               </Stack>
-            </DialogContentText>
+              <Stack gap={1}>
+                <Button
+                  variant="outlined"
+                  onClick={() => setPrintDialogOpen(true)}
+                >
+                  Print this code out
+                </Button>
+                <Button disabled variant="outlined">
+                  Stylise the page
+                </Button>
+                <Button disabled variant="outlined">
+                  Create another
+                </Button>
+                <Button disabled variant="outlined">
+                  See all your codes
+                </Button>
+              </Stack>
+            </Stack>
           </DialogContent>
         </Dialog>
       </div>
-      <PrintDialog
-        open={printDialogOpen}
-        setOpen={setPrintDialogOpen}
-        item={
-          {
-            id: createdItemId,
-            itemHref: `/${origin}/${createdItemId}`,
-            itemName: ''
-          } as any
-        }
-        baseUrl={origin}
-      />
+      {createdItem && (
+        <PrintDialog
+          open={printDialogOpen}
+          setOpen={setPrintDialogOpen}
+          item={createdItem}
+          baseUrl={origin}
+        />
+      )}
     </>
   );
 }
@@ -161,7 +152,7 @@ export function SuccessDialog({ createdItemId, origin }: AlertDialogProps) {
 type PrintDialogProps = {
   open: boolean;
   setOpen: (state: boolean) => any;
-  item: PrintFormItemSchema;
+  item: IItem;
   baseUrl: string;
 };
 function PrintDialog({ open, setOpen, item, baseUrl }: PrintDialogProps) {
@@ -179,9 +170,7 @@ function PrintDialog({ open, setOpen, item, baseUrl }: PrintDialogProps) {
         >
           <Close></Close>
         </IconButton>
-        <DialogContentText>
-          <PrintForm items={[item]} baseUrl={baseUrl} />
-        </DialogContentText>
+        <PrintForm items={[item]} baseUrl={baseUrl} />
       </DialogContent>
     </Dialog>
   );

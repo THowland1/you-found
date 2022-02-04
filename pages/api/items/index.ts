@@ -1,7 +1,7 @@
 import { getItemsByFirebaseUserId } from 'data-layer/getItemsByFirebaseUserId';
 import connectDB from 'middleware/mongodb';
 import { newItemSchema } from 'models/new-item';
-import { IItem, Item } from 'models/schema/item';
+import { IItem, IItemSchema, Item } from 'models/schema/item';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { tryGetAuthToken } from 'utils/try-get-auth-token';
 import { z } from 'zod';
@@ -32,7 +32,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           firebaseUserId: token.uid
         };
         const newItemDocument = await Item.create(newItem);
-        res.status(200).json({ itemId: newItemDocument._id!.toHexString() });
+        const item = IItemSchema.parse(newItemDocument);
+        res.status(200).json(item);
         break;
       default:
         res.status(404);

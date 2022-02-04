@@ -51,7 +51,7 @@ const ItemsPage: NextPage<ServerSideProps> = ({
 }) => {
   const theme = useTheme();
 
-  const [idToDelete, setIdToDelete] = useState<string | null>(null);
+  const [idToDelete, setIdToDelete] = useState<number | null>(null);
 
   const getQueryProps = useQuery(
     ['GetItemById'],
@@ -66,7 +66,7 @@ const ItemsPage: NextPage<ServerSideProps> = ({
       initialData: initialItems
     }
   );
-  const deleteItem = async (itemId: string) => {
+  const deleteItem = async (itemId: number) => {
     await axios.delete(`/api/items/${itemId}`);
     getQueryProps.refetch();
   };
@@ -115,10 +115,7 @@ const ItemsPage: NextPage<ServerSideProps> = ({
                       disablePadding
                       secondaryAction={
                         <Stack direction="row" gap=".5rem">
-                          <NextLink
-                            href={'./items/' + (item as any).id}
-                            passHref
-                          >
+                          <NextLink href={`./items/${item.itemSlug}`} passHref>
                             <Tooltip title="Edit">
                               <IconButton edge="end" aria-label="edit">
                                 <Edit />
@@ -131,7 +128,7 @@ const ItemsPage: NextPage<ServerSideProps> = ({
                               aria-label="delete"
                               onClick={e => {
                                 e.preventDefault();
-                                setIdToDelete((item as any).id);
+                                setIdToDelete(item.itemId);
                               }}
                             >
                               <Delete />
@@ -140,7 +137,7 @@ const ItemsPage: NextPage<ServerSideProps> = ({
                         </Stack>
                       }
                     >
-                      <NextLink href={`/${(item as any).id}`} passHref>
+                      <NextLink href={`/${item.itemSlug}`} passHref>
                         <Link
                           color={theme.palette.text.primary}
                           underline="hover"
@@ -149,7 +146,7 @@ const ItemsPage: NextPage<ServerSideProps> = ({
                           <ListItemButton>
                             <ListItemIcon>
                               <QRCode
-                                value={`${baseUrl}/${(item as any).id}`}
+                                value={`${baseUrl}/${item.itemSlug}`}
                                 renderAs="svg"
                                 height={'2rem'}
                                 width={'2rem'}
@@ -214,8 +211,8 @@ export const getServerSideProps: GetServerSideProps<
 };
 
 type AlertDialogProps = {
-  open: string | null;
-  setOpen: (state: string | null) => any;
+  open: number | null;
+  setOpen: (state: number | null) => any;
   beforeConfirm: () => Promise<void>;
 };
 export function ConfirmDialog({

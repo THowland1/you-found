@@ -1,8 +1,10 @@
 import mongoose, { Schema } from 'mongoose';
+import { z } from 'zod';
 import { IMongooseDocument } from '../mongoose/IMongooseDocument';
 import { IMongooseRef } from '../mongoose/IMongooseRef';
 import { SchemaNames } from '../mongoose/schema-names';
 import { IUserDocument } from './user';
+import { toZod } from 'tozod';
 
 export const itemValidation = {
   itemName: {
@@ -64,6 +66,21 @@ export interface IItem {
   showWhatsAppLink: boolean;
 }
 
+export const IItemSchema: toZod<IItem> = z.object({
+  itemId: z.number(),
+  itemSlug: z.string(),
+  firebaseUserId: z.string(),
+  emailAddress: z.string(),
+  headline: z.string(),
+  itemName: z.string(),
+  message: z.string(),
+  phoneNumber: z.string(),
+  showEmailLink: z.boolean(),
+  showPhoneCallLink: z.boolean(),
+  showSMSLink: z.boolean(),
+  showWhatsAppLink: z.boolean()
+});
+
 export const IUserProps: { [key in keyof IItem]: key } = {
   itemId: 'itemId',
   itemSlug: 'itemSlug',
@@ -83,7 +100,7 @@ export type IItemDocument = IMongooseDocument<IItem>;
 export type IItemRef = IMongooseRef<IItemDocument>;
 
 const ItemSchema: Schema = new Schema({
-  itemId: { type: String, required: true },
+  itemId: { type: Number, required: true },
   itemSlug: { type: String, required: true },
   firebaseUserId: { type: String, required: true },
   emailAddress: { type: String, required: true },

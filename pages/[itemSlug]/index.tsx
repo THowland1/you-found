@@ -1,8 +1,6 @@
-import { faFacebookMessenger } from '@fortawesome/free-brands-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Email, Phone, Sms, WhatsApp } from '@mui/icons-material';
 import { Button, Grid, Link, Typography, useTheme } from '@mui/material';
-import { getItemById } from 'data-layer/getItemById';
+import { getItemByItemSlug } from 'data-layer/getItemByItemSlug';
 import { IItem } from 'models/schema/item';
 import { GetServerSideProps, NextPage } from 'next';
 import { honeycomb } from 'styles/backgrounds';
@@ -165,10 +163,9 @@ export default ItemPage;
 export const getServerSideProps: GetServerSideProps<ServerSideProps> = async ({
   query
 }) => {
-  const itemId = z.string().parse(query.itemId);
-  const item = await getItemById(itemId);
+  const itemSlug = z.string().parse(query.itemSlug);
+  const item = await getItemByItemSlug(itemSlug);
 
-  console.log(item);
   if (item) {
     return { props: { item } };
   } else {

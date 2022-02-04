@@ -22,6 +22,7 @@ import { z } from 'zod';
 import { toFormikValidationSchema } from 'zod-formik-adapter';
 
 const itemSchema = z.object({
+  itemSlug: z.string(),
   itemName: z.string(),
   itemHref: z.string()
 });
@@ -45,19 +46,14 @@ const schema = z.object({
 type Schema = z.infer<typeof schema>;
 export type PrintFormItemSchema = z.infer<typeof itemSchema>;
 
-const getItemUrl = (baseUrl: string, item: PrintFormItemSchema) =>
-  `${baseUrl}/${(item as any).id}`;
-
-const generateInitialValues = (
-  items: PrintFormItemSchema[],
-  baseUrl: string
-): Schema => {
+const generateInitialValues = (items: IItem[], baseUrl: string): Schema => {
   return {
     gap: 10,
     codes: items.map(item => ({
       item: {
-        ...item,
-        itemHref: getItemUrl(baseUrl, item)
+        itemSlug: item.itemSlug,
+        itemName: item.itemName,
+        itemHref: `${baseUrl}/items/${item.itemSlug}`
       },
       width: 50,
       padding: 5
@@ -65,7 +61,7 @@ const generateInitialValues = (
   };
 };
 
-type PrintFormProps = { items: PrintFormItemSchema[]; baseUrl: string };
+type PrintFormProps = { items: IItem[]; baseUrl: string };
 const PrintForm = ({ items, baseUrl }: PrintFormProps) => {
   const initialValues = generateInitialValues(items, baseUrl);
   const onSubmit = (values: Schema) => {};
@@ -143,17 +139,17 @@ const PrintForm = ({ items, baseUrl }: PrintFormProps) => {
                                 label="Item"
                                 size="small"
                                 mapValue={{
-                                  formikToMui: (formikValue: any) =>
+                                  formikToMui: (
+                                    formikValue: PrintFormItemSchema
+                                  ) =>
                                     items.findIndex(
-                                      (itemm: any) =>
-                                        itemm.id === formikValue.id
+                                      itemm =>
+                                        itemm.itemSlug === formikValue.itemSlug
                                     ),
                                   muiToFormik: (muiValue: number) => ({
-                                    ...items[muiValue],
-                                    itemHref: getItemUrl(
-                                      baseUrl,
-                                      items[muiValue]
-                                    )
+                                    itemSlug: items[muiValue].itemSlug,
+                                    itemName: items[muiValue].itemName,
+                                    itemHref: `${baseUrl}/items/${items[muiValue].itemSlug}`
                                   })
                                 }}
                               >
@@ -204,8 +200,9 @@ const PrintForm = ({ items, baseUrl }: PrintFormProps) => {
                           onClick={_ => {
                             arrayHelper.push({
                               item: {
-                                ...items[0],
-                                itemHref: getItemUrl(baseUrl, items[0])
+                                itemSlug: items[0].itemSlug,
+                                itemName: items[0].itemName,
+                                itemHref: `${baseUrl}/items/${items[0].itemSlug}`
                               },
                               width: 50,
                               padding: 5

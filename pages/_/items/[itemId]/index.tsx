@@ -13,7 +13,7 @@ type ServerSideProps = { item: IItem };
 const ItemEditPage: NextPage<ServerSideProps> = ({ item }) => {
   const router = useRouter();
   const postNewItem = async (values: INewItem) => {
-    await axios.put(`/api/items/${(item as any).id}`, values);
+    await axios.put(`/api/items/${item.itemSlug}`, values);
     await router.push(`/_/items`);
   };
 

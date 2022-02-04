@@ -56,7 +56,7 @@ const generateInitialValues = (value: string): Schema => {
 };
 
 const ItemEditPage: NextPage<ServerSideProps> = ({ item, baseUrl }) => {
-  const itemHref = `${baseUrl}/${(item as any).id}`;
+  const itemHref = `${baseUrl}/${item.itemSlug}`;
   const initialValues = generateInitialValues(itemHref);
   const onSubmit = (values: Schema) => {};
   const theme = useTheme<Theme>();

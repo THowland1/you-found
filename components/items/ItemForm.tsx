@@ -1,23 +1,17 @@
 import { LoadingButton } from '@mui/lab';
-import {
-  Box,
-  Checkbox,
-  CheckboxProps,
-  FormControlLabel,
-  FormControlLabelProps,
-  Grid,
-  Paper,
-  Typography
-} from '@mui/material';
+import { Box, Grid, Paper, Typography } from '@mui/material';
 import { useTheme } from '@mui/system';
+import FormikCheckboxField from 'components/fields/FormikCheckboxField';
 import FormikTextField from 'components/fields/FormikTextField';
 import Shell from 'components/shared/shell';
-import { Field, Form, Formik } from 'formik';
+import { Form, Formik, FormikProps } from 'formik';
 import { INewItem, newItemSchema } from 'models/new-item';
 import { IItem } from 'models/schema/item';
+import { RefObject } from 'react';
 import { toFormikValidationSchema } from 'zod-formik-adapter';
 
 type ItemFormProps<T extends IItem | INewItem> = {
+  formikRef?: RefObject<FormikProps<T>>;
   initialValues: T;
   onSubmit: (val: T) => any;
 };
@@ -31,6 +25,7 @@ function ItemForm<T extends IItem | INewItem>(
         initialValues={props.initialValues}
         validationSchema={toFormikValidationSchema(newItemSchema)}
         onSubmit={values => props.onSubmit(values)}
+        innerRef={props.formikRef}
       >
         {({ values, submitForm, isSubmitting }) => (
           <Form>
@@ -103,32 +98,23 @@ function ItemForm<T extends IItem | INewItem>(
                         />
                       </Box>
                       <Box component="div">
-                        <Field
+                        <FormikCheckboxField
                           name="showWhatsAppLink"
-                          as={CheckboxWithLabel}
-                          {...({
-                            label: 'Show WhatsApp link'
-                          } as CheckboxWithLabelProps)}
+                          label="Show WhatsApp link"
                         />
                       </Box>
 
                       <Box component="div">
-                        <Field
+                        <FormikCheckboxField
                           name="showPhoneCallLink"
-                          as={CheckboxWithLabel}
-                          {...({
-                            label: 'Show phone call link'
-                          } as CheckboxWithLabelProps)}
+                          label="Show phone call link"
                         />
                       </Box>
 
                       <Box component="div">
-                        <Field
+                        <FormikCheckboxField
                           name="showSMSLink"
-                          as={CheckboxWithLabel}
-                          {...({
-                            label: 'Show SMS link'
-                          } as CheckboxWithLabelProps)}
+                          label="Show SMS link"
                         />
                       </Box>
                     </Grid>
@@ -151,12 +137,9 @@ function ItemForm<T extends IItem | INewItem>(
                       </Box>
 
                       <Box component="div">
-                        <Field
+                        <FormikCheckboxField
                           name="showEmailLink"
-                          as={CheckboxWithLabel}
-                          {...({
-                            label: 'Show email link'
-                          } as CheckboxWithLabelProps)}
+                          label="Show email link"
                         />
                       </Box>
                     </Grid>
@@ -190,10 +173,3 @@ function ItemForm<T extends IItem | INewItem>(
 }
 
 export default ItemForm;
-
-type CheckboxWithLabelProps = CheckboxProps & FormControlLabelProps;
-function CheckboxWithLabel(props: CheckboxWithLabelProps): JSX.Element {
-  return (
-    <FormControlLabel label={props.label} control={<Checkbox {...props} />} />
-  );
-}

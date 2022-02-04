@@ -1,6 +1,7 @@
 import axios from 'axios';
 import ItemForm from 'components/items/ItemForm';
 import { getItemById } from 'data-layer/getItemById';
+import { getItemByItemSlug } from 'data-layer/getItemByItemSlug';
 import { INewItem } from 'models/new-item';
 import { IItem } from 'models/schema/item';
 import { GetServerSideProps, NextPage } from 'next';
@@ -33,11 +34,9 @@ export default ItemEditPage;
 export const getServerSideProps: GetServerSideProps<ServerSideProps> = async ({
   query
 }) => {
-  console.log(query);
-  const itemId = z.string().parse(query.itemId);
-  const item = await getItemById(itemId);
+  const itemSlug = z.string().parse(query.itemSlug);
+  const item = await getItemByItemSlug(itemSlug);
 
-  console.log(item);
   if (item) {
     return { props: { item } };
   } else {

@@ -42,6 +42,13 @@ const initialValues: INewItem = {
 
 const NewPage: NextPage<ServerSideProps> = ({ origin }) => {
   const [createdItem, setCreatedItem] = useState<IItem | null>(null);
+  const formikRef = useRef<FormikProps<INewItem>>(null);
+
+  const reset = () => {
+    setCreatedItem(null);
+    formikRef.current?.resetForm();
+  };
+
   const postNewItem = async (values: INewItem) => {
     const response = await axios.post<IItem>('/api/items', {
       ...values,
@@ -58,8 +65,16 @@ const NewPage: NextPage<ServerSideProps> = ({ origin }) => {
         <title>Register new code</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <ItemForm initialValues={initialValues} onSubmit={postNewItem} />
-      <SuccessDialog createdItem={createdItem} origin={origin}></SuccessDialog>
+      <ItemForm
+        formikRef={formikRef}
+        initialValues={initialValues}
+        onSubmit={postNewItem}
+      />
+      <SuccessDialog
+        reset={reset}
+        createdItem={createdItem}
+        origin={origin}
+      ></SuccessDialog>
     </>
   );
 };
@@ -80,8 +95,13 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async ({
 type AlertDialogProps = {
   createdItem: IItem | null;
   origin: string;
+  reset: () => void;
 };
-export function SuccessDialog({ createdItem, origin }: AlertDialogProps) {
+export function SuccessDialog({
+  createdItem,
+  origin,
+  reset
+}: AlertDialogProps) {
   const [loading, setLoading] = useState(false);
   const [printDialogOpen, setPrintDialogOpen] = useState(false);
 
@@ -126,12 +146,12 @@ export function SuccessDialog({ createdItem, origin }: AlertDialogProps) {
                 <Button disabled variant="outlined">
                   Stylise the page
                 </Button>
-                <Button disabled variant="outlined">
+                <Button onClick={() => reset()} variant="outlined">
                   Create another
                 </Button>
-                <Button disabled variant="outlined">
-                  See all your codes
-                </Button>
+                <Link href="/_/items" passHref>
+                  <Button variant="outlined">See all your codes</Button>
+                </Link>
               </Stack>
             </Stack>
           </DialogContent>

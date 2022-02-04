@@ -49,6 +49,9 @@ export const NavBar: FC = () => {
             <MenuItem disabled>
               Signed in{user.displayName ? ' as ' + user.displayName : ''}
             </MenuItem>
+            <NextLink href="/_/items" passHref>
+              <MenuItem>Your items</MenuItem>
+            </NextLink>
             <MenuItem onClick={logout}>
               <ListItemIcon>
                 <LogoutIcon fontSize="small" />

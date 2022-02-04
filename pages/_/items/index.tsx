@@ -51,7 +51,7 @@ const ItemsPage: NextPage<ServerSideProps> = ({
 }) => {
   const theme = useTheme();
 
-  const [idToDelete, setIdToDelete] = useState<number | null>(null);
+  const [slugToDelete, setSlugToDelete] = useState<string | null>(null);
 
   const getQueryProps = useQuery(
     ['GetItemById'],
@@ -66,8 +66,8 @@ const ItemsPage: NextPage<ServerSideProps> = ({
       initialData: initialItems
     }
   );
-  const deleteItem = async (itemId: number) => {
-    await axios.delete(`/api/items/${itemId}`);
+  const deleteItem = async (itemSlug: string) => {
+    await axios.delete(`/api/items/${itemSlug}`);
     getQueryProps.refetch();
   };
   const items = getQueryProps.data!;
@@ -75,9 +75,9 @@ const ItemsPage: NextPage<ServerSideProps> = ({
   return (
     <Shell>
       <ConfirmDialog
-        open={idToDelete}
-        setOpen={setIdToDelete}
-        beforeConfirm={() => deleteItem(idToDelete!)}
+        open={slugToDelete}
+        setOpen={setSlugToDelete}
+        beforeConfirm={() => deleteItem(slugToDelete!)}
       />
       <Grid
         container
@@ -93,7 +93,11 @@ const ItemsPage: NextPage<ServerSideProps> = ({
             <CardHeader
               title="Your items"
               action={
-                <Stack gap={1} direction="row">
+                <Stack
+                  display={{ xs: 'none', sm: 'flex' }}
+                  gap={1}
+                  direction="row"
+                >
                   <NextLink href="/me/print" passHref>
                     <Button variant="outlined" startIcon={<QrCode2 />}>
                       Print QR codes
@@ -128,7 +132,7 @@ const ItemsPage: NextPage<ServerSideProps> = ({
                               aria-label="delete"
                               onClick={e => {
                                 e.preventDefault();
-                                setIdToDelete(item.itemId);
+                                setSlugToDelete(item.itemSlug);
                               }}
                             >
                               <Delete />
@@ -160,6 +164,18 @@ const ItemsPage: NextPage<ServerSideProps> = ({
                   </React.Fragment>
                 ))}
               </List>
+              <Stack display={{ xs: 'flex', sm: 'none' }} padding={1} gap={1}>
+                <NextLink href="/me/print" passHref>
+                  <Button variant="outlined" startIcon={<QrCode2 />}>
+                    Print QR codes
+                  </Button>
+                </NextLink>
+                <NextLink href="/_/new" passHref>
+                  <Button variant="contained" startIcon={<Add />}>
+                    Add new
+                  </Button>
+                </NextLink>
+              </Stack>
             </CardContent>
           </Card>
         </Grid>
@@ -211,8 +227,8 @@ export const getServerSideProps: GetServerSideProps<
 };
 
 type AlertDialogProps = {
-  open: number | null;
-  setOpen: (state: number | null) => any;
+  open: string | null;
+  setOpen: (state: string | null) => any;
   beforeConfirm: () => Promise<void>;
 };
 export function ConfirmDialog({

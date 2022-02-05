@@ -79,6 +79,7 @@ const StickerSheetPreview = ({ codes, gap }: StickerSheetPreviewProps) => (
             <View style={styles.main}>
               {codes.map(({ item, width, padding }, i) => (
                 <View
+                  key={i}
                   style={[
                     {
                       width: `${width}mm`,

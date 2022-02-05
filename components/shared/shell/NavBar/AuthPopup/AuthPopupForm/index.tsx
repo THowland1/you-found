@@ -1,4 +1,4 @@
-import { Button, Grid, TextField } from '@mui/material';
+import { Box, Button, Grid, Link, TextField } from '@mui/material';
 import {
   IAuthenticationResult,
   IAuthenticationSuccessResult,
@@ -10,13 +10,17 @@ import React, { FC } from 'react';
 import * as yup from 'yup';
 import { Alert } from '@mui/material';
 import { useAuth } from 'components/shared/auth/useAuth';
+import FormikTextField from 'components/fields/FormikTextField';
+import { UseState } from 'types/UseState';
 
 type Callback<TArg, TResult = void> = (arg: TArg) => TResult;
 
 export const AuthPopupForm: FC<{
-  isNewUser: boolean;
+  isNewUserState: UseState<boolean>;
   onAuthSuccess: Callback<IAuthenticationSuccessResult>;
-}> = ({ isNewUser, onAuthSuccess }) => {
+}> = ({ isNewUserState, onAuthSuccess }) => {
+  const [isNewUser, setIsNewUser] = isNewUserState;
+
   const {
     loginWithCredentials,
     registerWithCredentials,
@@ -47,14 +51,6 @@ export const AuthPopupForm: FC<{
     password: '',
     displayName: '' as string | undefined
   };
-
-  function loginOrRegister(
-    credentials: ICredentials
-  ): Promise<IAuthenticationResult> {
-    return isNewUser
-      ? registerWithCredentials(credentials)
-      : loginWithCredentials(credentials);
-  }
 
   async function linkOrRegister(values: typeof initialValues) {
     if (user) {
@@ -95,54 +91,32 @@ export const AuthPopupForm: FC<{
       onSubmit={ddd => onFormSubmit(ddd)}
       validationSchema={schema}
     >
-      {({ errors, handleChange, handleBlur, touched }) => (
+      {({ errors, handleChange, handleBlur, touched, resetForm }) => (
         <Form>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <TextField
+              <FormikTextField
+                fullWidth
                 label="Email"
                 name="emailAddress"
                 type="email"
-                fullWidth
-                error={Boolean(errors.emailAddress && touched.emailAddress)}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                helperText={
-                  errors.emailAddress &&
-                  touched.emailAddress &&
-                  String(errors.emailAddress)
-                }
               />
             </Grid>
             {isNewUser && (
               <Grid item xs={12}>
-                <TextField
-                  label="Display Name"
-                  name="displayName"
+                <FormikTextField
                   fullWidth
-                  error={Boolean(errors.displayName && touched.displayName)}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  helperText={
-                    errors.displayName &&
-                    touched.displayName &&
-                    String(errors.displayName)
-                  }
+                  label="Display name"
+                  name="displayName"
                 />
               </Grid>
             )}
             <Grid item xs={12}>
-              <TextField
+              <FormikTextField
+                fullWidth
                 label="Password"
                 name="password"
                 type="password"
-                fullWidth
-                error={Boolean(errors.password && touched.password)}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                helperText={
-                  errors.password && touched.password && String(errors.password)
-                }
               />
             </Grid>
             {error && (
@@ -159,22 +133,25 @@ export const AuthPopupForm: FC<{
                 type="submit"
                 fullWidth
               >
-                {isNewUser ? 'Register now' : 'Log in'}
+                {isNewUser ? 'Create account' : 'Log in'}
               </Button>
             </Grid>
-            {/* <Grid item container xs={12}>
-                  <Grid item xs={3} container alignItems="center">
-                    <Divider style={{ width: '100%' }} />
-                  </Grid>
-                  <Grid item xs={6} container justify="center" alignItems="center">
-                    <Typography>
-                      or continue with
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={3} container alignItems="center">
-                    <Divider style={{ width: '100%' }} />
-                  </Grid>
-                </Grid> */}
+            <Grid item xs={12}>
+              <Box sx={{ fontSize: 'small', textAlign: 'center' }}>
+                {isNewUser ? 'Already have an account?' : 'New here?'}&nbsp;
+                <Link
+                  component="button"
+                  type="button"
+                  onClick={() => {
+                    setIsNewUser(!isNewUser);
+                    resetForm();
+                  }}
+                  underline="hover"
+                >
+                  {isNewUser ? 'Log in' : 'Create an account'}
+                </Link>
+              </Box>
+            </Grid>
           </Grid>
         </Form>
       )}

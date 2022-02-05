@@ -26,13 +26,7 @@ export const AuthPopup: FC<{
         <Grid container>
           <Grid item>
             <Typography display="inline" variant="h4">
-              {isNewUser ? 'Register' : 'Log in'}
-            </Typography>
-            <Typography display="inline" variant="h6">
-              &nbsp; or{' '}
-              <Button onClick={() => setIsNewUser(!isNewUser)} variant="text">
-                {isNewUser ? 'log in' : 'register for free'}
-              </Button>
+              {isNewUser ? 'Create your account' : 'Log in'}
             </Typography>
           </Grid>
           <Box sx={{ flexGrow: 1 }} />
@@ -45,9 +39,8 @@ export const AuthPopup: FC<{
       </DialogTitle>
       <DialogContent>
         <AuthPopupForm
-          isNewUser={isNewUser}
-          onAuthSuccess={a => {
-            alert(`logged in as ${a.userCredential.user?.email}`);
+          isNewUserState={[isNewUser, setIsNewUser]}
+          onAuthSuccess={_ => {
             setOpen(false);
           }}
         />

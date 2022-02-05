@@ -50,66 +50,71 @@ const ItemPage: NextPage<ServerSideProps> = ({ item }) => {
           <Grid
             container
             maxWidth={theme.breakpoints.values.sm}
-            margin={'auto'}
+            margin="auto"
             direction="column"
-            gap="2rem"
-            sx={{
-              padding: '2rem',
-              [theme.breakpoints.down('sm')]: {
-                padding: '1rem'
-              }
-            }}
+            gap={2}
+            padding={{ xs: 1, sm: 2 }}
           >
             <Typography variant="h3">{item.message}</Typography>
-            <Grid item>
-              <Link href={'https://wa.me/' + item.phoneNumber} underline="none">
-                <Button
-                  fullWidth
-                  variant="contained"
-                  startIcon={<WhatsApp />}
-                  sx={{ paddingY: '1rem' }}
+            {item.showWhatsAppLink && (
+              <Grid item>
+                <Link
+                  href={'https://wa.me/' + item.phoneNumber}
+                  underline="none"
                 >
-                  Message me on whatsapp
-                </Button>
-              </Link>
-            </Grid>
-            <Grid item>
-              <Link href={'sms:' + item.phoneNumber} underline="none">
-                <Button
-                  fullWidth
-                  variant="contained"
-                  startIcon={<Sms />}
-                  sx={{ paddingY: '1rem' }}
-                >
-                  Send me a text
-                </Button>
-              </Link>
-            </Grid>
-            <Grid item>
-              <Link href={'tel:' + item.phoneNumber} underline="none">
-                <Button
-                  fullWidth
-                  variant="contained"
-                  startIcon={<Phone />}
-                  sx={{ paddingY: '1rem' }}
-                >
-                  Give me a call
-                </Button>
-              </Link>
-            </Grid>
-
-            <Grid item>
-              <Link href={'mailto:' + item.emailAddress} underline="none">
-                <Button
-                  fullWidth
-                  variant="contained"
-                  startIcon={<Email />}
-                  sx={{ paddingY: '1rem' }}
-                >
-                  Email me
-                </Button>
-              </Link>
-            </Grid>
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    startIcon={<WhatsApp />}
+                    sx={{ paddingY: '1rem' }}
+                  >
+                    Message me on whatsapp
+                  </Button>
+                </Link>
+              </Grid>
+            )}
+            {item.showSMSLink && (
+              <Grid item>
+                <Link href={'sms:' + item.phoneNumber} underline="none">
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    startIcon={<Sms />}
+                    sx={{ paddingY: '1rem' }}
+                  >
+                    Send me a text
+                  </Button>
+                </Link>
+              </Grid>
+            )}
+            {item.showPhoneCallLink && (
+              <Grid item>
+                <Link href={'tel:' + item.phoneNumber} underline="none">
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    startIcon={<Phone />}
+                    sx={{ paddingY: '1rem' }}
+                  >
+                    Give me a call
+                  </Button>
+                </Link>
+              </Grid>
+            )}
+            {item.showEmailLink && (
+              <Grid item>
+                <Link href={'mailto:' + item.emailAddress} underline="none">
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    startIcon={<Email />}
+                    sx={{ paddingY: '1rem' }}
+                  >
+                    Email me
+                  </Button>
+                </Link>
+              </Grid>
+            )}
 
             <Grid item margin="auto">
               <Link href={'/'} underline="hover">

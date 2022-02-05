@@ -20,11 +20,13 @@ import { AuthPopup } from './AuthPopup';
 import { useTheme } from '@mui/system';
 import { AccountCircle } from '@mui/icons-material';
 import NextLink from 'next/link';
+import { useRouter } from 'next/dist/client/router';
 
 export const NavBar: FC = () => {
   const [popupOpen, setPopupOpen] = React.useState(false);
   const { user } = useAuth();
   const { logout } = useAuthService();
+  const router = useRouter();
   const theme = useTheme<Theme>();
 
   return (
@@ -44,7 +46,7 @@ export const NavBar: FC = () => {
           </Link>
         </NextLink>
         <Box sx={{ flexGrow: 1 }} />
-        {user ? (
+        {user && !user.isAnonymous ? (
           <BasicMenu buttonText={user.displayName || 'My account'}>
             <MenuItem disabled>
               Signed in{user.displayName ? ' as ' + user.displayName : ''}
@@ -52,7 +54,12 @@ export const NavBar: FC = () => {
             <NextLink href="/_/items" passHref>
               <MenuItem>Your items</MenuItem>
             </NextLink>
-            <MenuItem onClick={logout}>
+            <MenuItem
+              onClick={async () => {
+                await logout();
+                router.push('/');
+              }}
+            >
               <ListItemIcon>
                 <LogoutIcon fontSize="small" />
               </ListItemIcon>

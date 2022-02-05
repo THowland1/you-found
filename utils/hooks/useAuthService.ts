@@ -68,6 +68,30 @@ export const useAuthService = () => {
       .catch(error => ({ success: false, error: error as Error } as const));
   }
 
+  async function registerAnonymously(): Promise<IAuthenticationResult> {
+    return firebase
+      .auth()
+      .signInAnonymously()
+      .then(userCredential => ({ success: true, userCredential } as const))
+      .catch(error => ({ success: false, error: error as Error } as const));
+  }
+
+  async function linkUserWithCredentials(
+    user: firebase.User,
+    credentials: ICredentials
+  ): Promise<IAuthenticationResult> {
+    const { emailAddress, password } = credentials;
+    const credential = firebase.auth.EmailAuthProvider.credential(
+      emailAddress,
+      password
+    );
+
+    return user
+      .linkWithCredential(credential)
+      .then(userCredential => ({ success: true, userCredential } as const))
+      .catch(error => ({ success: false, error: error as Error } as const));
+  }
+
   async function updateUserDisplayName(displayName: string): Promise<IResult> {
     const user = firebase.auth().currentUser;
     if (!user) {
@@ -94,6 +118,8 @@ export const useAuthService = () => {
     registerWithCredentials,
     loginWithCredentials,
     updateUserDisplayName,
+    registerAnonymously,
+    linkUserWithCredentials,
     logout
   };
 };

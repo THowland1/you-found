@@ -28,6 +28,10 @@ import PrintForm, { PrintFormItemSchema } from 'components/PrintForm';
 import { Close } from '@mui/icons-material';
 import Link from 'next/link';
 import { FormikProps } from 'formik';
+import { useAuthService } from 'utils/hooks/useAuthService';
+import { useAuth } from 'components/shared/auth/useAuth';
+import nookies from 'nookies';
+
 const initialValues: INewItem = {
   itemName: '',
   headline: '!',
@@ -42,6 +46,8 @@ const initialValues: INewItem = {
 };
 
 const NewPage: NextPage<ServerSideProps> = ({ origin }) => {
+  const { registerAnonymously } = useAuthService();
+  const { user } = useAuth();
   const [createdItem, setCreatedItem] = useState<IItem | null>(null);
   const formikRef = useRef<FormikProps<INewItem>>(null);
 
@@ -51,6 +57,16 @@ const NewPage: NextPage<ServerSideProps> = ({ origin }) => {
   };
 
   const postNewItem = async (values: INewItem) => {
+    if (!user) {
+      const result = await registerAnonymously();
+      if (result.success) {
+        const token = await result.userCredential.user!.getIdToken();
+        nookies.set(undefined, 'token', token, {
+          path: '/'
+        });
+      }
+    }
+
     const response = await axios.post<IItem>('/api/items', {
       ...values,
       headline: `Hi, you've found my ${values.itemName}!`,

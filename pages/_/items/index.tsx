@@ -23,7 +23,9 @@ import {
   DialogTitle,
   Link,
   Box,
-  ListItemIcon
+  ListItemIcon,
+  Alert,
+  AlertTitle
 } from '@mui/material';
 import NextLink from 'next/link';
 import axios from 'axios';
@@ -34,38 +36,41 @@ import { firebaseAdmin } from 'middleware/firebaseAdmin';
 import { IItem } from 'models/schema/item';
 import { GetServerSideProps, NextPage } from 'next';
 import nookies from 'nookies';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import QRCode from 'qrcode.react';
 import { z } from 'zod';
+import { useAuth } from 'components/shared/auth/useAuth';
+import { tryGetAuthToken } from 'utils/try-get-auth-token';
 
 type ServerSideProps = {
   items: IItem[];
-  userEmailAddress: string;
   baseUrl: string;
 };
 const ItemsPage: NextPage<ServerSideProps> = ({
   items: initialItems,
-  userEmailAddress,
   baseUrl
 }) => {
   const theme = useTheme();
+  const { user } = useAuth();
 
   const [slugToDelete, setSlugToDelete] = useState<string | null>(null);
 
   const getQueryProps = useQuery(
     ['GetItemById'],
     async () => {
-      return (
-        await axios.get<IItem[]>(`/api/items`, {
-          params: { emailAddress: userEmailAddress }
-        })
-      ).data;
+      return (await axios.get<IItem[]>(`/api/items`)).data;
     },
     {
-      initialData: initialItems
+      initialData: initialItems,
+      refetchOnWindowFocus: true
     }
   );
+
+  useEffect(() => {
+    getQueryProps.refetch();
+  }, [user]);
+
   const deleteItem = async (itemSlug: string) => {
     await axios.delete(`/api/items/${itemSlug}`);
     getQueryProps.refetch();
@@ -89,15 +94,94 @@ const ItemsPage: NextPage<ServerSideProps> = ({
         direction={'column'}
       >
         <Grid item>
-          <Card>
-            <CardHeader
-              title="Your items"
-              action={
-                <Stack
-                  display={{ xs: 'none', sm: 'flex' }}
-                  gap={1}
-                  direction="row"
-                >
+          <Stack gap={1}>
+            {user && user.isAnonymous && (
+              <Alert severity="warning" elevation={1}>
+                <AlertTitle>Don't lose your items!</AlertTitle>
+                You are currently a guest, which means as soon as your session
+                expires (when you close your browser), you won't be able to edit
+                or print your codes
+              </Alert>
+            )}
+            <Card>
+              <CardHeader
+                title="Your items"
+                action={
+                  <Stack
+                    display={{ xs: 'none', sm: 'flex' }}
+                    gap={1}
+                    direction="row"
+                  >
+                    <NextLink href="/me/print" passHref>
+                      <Button variant="outlined" startIcon={<QrCode2 />}>
+                        Print QR codes
+                      </Button>
+                    </NextLink>
+                    <NextLink href="/_/new" passHref>
+                      <Button variant="contained" startIcon={<Add />}>
+                        Add new
+                      </Button>
+                    </NextLink>
+                  </Stack>
+                }
+              />
+              <CardContent sx={{ padding: 0 }}>
+                <List sx={{ width: '100%' }}>
+                  {items.map((item, i) => (
+                    <React.Fragment key={i}>
+                      <ListItem
+                        disablePadding
+                        secondaryAction={
+                          <Stack direction="row" gap=".5rem">
+                            <NextLink
+                              href={`/_/items/${item.itemSlug}`}
+                              passHref
+                            >
+                              <Tooltip title="Edit">
+                                <IconButton edge="end" aria-label="edit">
+                                  <Edit />
+                                </IconButton>
+                              </Tooltip>
+                            </NextLink>
+                            <Tooltip title="Delete">
+                              <IconButton
+                                edge="end"
+                                aria-label="delete"
+                                onClick={e => {
+                                  e.preventDefault();
+                                  setSlugToDelete(item.itemSlug);
+                                }}
+                              >
+                                <Delete />
+                              </IconButton>
+                            </Tooltip>
+                          </Stack>
+                        }
+                      >
+                        <NextLink href={`/${item.itemSlug}`} passHref>
+                          <Link
+                            color={theme.palette.text.primary}
+                            underline="hover"
+                            width={'100%'}
+                          >
+                            <ListItemButton>
+                              <ListItemIcon>
+                                <QRCode
+                                  value={`${baseUrl}/${item.itemSlug}`}
+                                  renderAs="svg"
+                                  height={'2rem'}
+                                  width={'2rem'}
+                                />
+                              </ListItemIcon>
+                              <ListItemText>{item.itemName}</ListItemText>
+                            </ListItemButton>
+                          </Link>
+                        </NextLink>
+                      </ListItem>
+                    </React.Fragment>
+                  ))}
+                </List>
+                <Stack display={{ xs: 'flex', sm: 'none' }} padding={1} gap={1}>
                   <NextLink href="/me/print" passHref>
                     <Button variant="outlined" startIcon={<QrCode2 />}>
                       Print QR codes
@@ -109,75 +193,9 @@ const ItemsPage: NextPage<ServerSideProps> = ({
                     </Button>
                   </NextLink>
                 </Stack>
-              }
-            />
-            <CardContent sx={{ padding: 0 }}>
-              <List sx={{ width: '100%' }}>
-                {items.map((item, i) => (
-                  <React.Fragment key={i}>
-                    <ListItem
-                      disablePadding
-                      secondaryAction={
-                        <Stack direction="row" gap=".5rem">
-                          <NextLink href={`./items/${item.itemSlug}`} passHref>
-                            <Tooltip title="Edit">
-                              <IconButton edge="end" aria-label="edit">
-                                <Edit />
-                              </IconButton>
-                            </Tooltip>
-                          </NextLink>
-                          <Tooltip title="Delete">
-                            <IconButton
-                              edge="end"
-                              aria-label="delete"
-                              onClick={e => {
-                                e.preventDefault();
-                                setSlugToDelete(item.itemSlug);
-                              }}
-                            >
-                              <Delete />
-                            </IconButton>
-                          </Tooltip>
-                        </Stack>
-                      }
-                    >
-                      <NextLink href={`/${item.itemSlug}`} passHref>
-                        <Link
-                          color={theme.palette.text.primary}
-                          underline="hover"
-                          width={'100%'}
-                        >
-                          <ListItemButton>
-                            <ListItemIcon>
-                              <QRCode
-                                value={`${baseUrl}/${item.itemSlug}`}
-                                renderAs="svg"
-                                height={'2rem'}
-                                width={'2rem'}
-                              />
-                            </ListItemIcon>
-                            <ListItemText>{item.itemName}</ListItemText>
-                          </ListItemButton>
-                        </Link>
-                      </NextLink>
-                    </ListItem>
-                  </React.Fragment>
-                ))}
-              </List>
-              <Stack display={{ xs: 'flex', sm: 'none' }} padding={1} gap={1}>
-                <NextLink href="/me/print" passHref>
-                  <Button variant="outlined" startIcon={<QrCode2 />}>
-                    Print QR codes
-                  </Button>
-                </NextLink>
-                <NextLink href="/_/new" passHref>
-                  <Button variant="contained" startIcon={<Add />}>
-                    Add new
-                  </Button>
-                </NextLink>
-              </Stack>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </Stack>
         </Grid>
       </Grid>
     </Shell>
@@ -186,30 +204,31 @@ const ItemsPage: NextPage<ServerSideProps> = ({
 
 export default ItemsPage;
 
-async function tryVerifyIdToken(idToken: string) {
-  try {
-    const token = await firebaseAdmin.auth().verifyIdToken(idToken);
-    return { success: true, token } as const;
-  } catch {
-    return { success: false } as const;
-  }
-}
-
 export const getServerSideProps: GetServerSideProps<
   ServerSideProps
 > = async ctx => {
   const baseUrl = z.string().url().parse(process.env.ORIGIN);
 
-  const cookies = nookies.get(ctx);
-
-  const tokenAttempt = await tryVerifyIdToken(cookies.token);
+  const tokenAttempt = await tryGetAuthToken(['getServerSideProps', ctx]);
   if (!tokenAttempt.success) {
-    return {
-      redirect: {
-        destination: `/auth/refresh?redirecturl=/_/items`,
-        permanent: false
-      }
-    } as const;
+    switch (tokenAttempt.reason) {
+      case 'expired':
+        return {
+          redirect: {
+            destination: `/auth/refresh?redirecturl=/_/items`,
+            permanent: false
+          }
+        } as const;
+      case 'unauthenticated':
+        return {
+          redirect: {
+            destination: `/`,
+            permanent: false
+          }
+        } as const;
+      default:
+        throw new TypeError('Unsupported tokenAttempt.reason');
+    }
   }
   const token = tokenAttempt.token;
 
@@ -217,7 +236,7 @@ export const getServerSideProps: GetServerSideProps<
 
   if (items) {
     return {
-      props: { items, userEmailAddress: token.email!, baseUrl }
+      props: { items, baseUrl }
     } as const;
   } else {
     return {

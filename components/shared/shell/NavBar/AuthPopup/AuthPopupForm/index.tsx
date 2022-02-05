@@ -9,6 +9,7 @@ import { Form, Formik } from 'formik';
 import React, { FC } from 'react';
 import * as yup from 'yup';
 import { Alert } from '@mui/material';
+import { useAuth } from 'components/shared/auth/useAuth';
 
 type Callback<TArg, TResult = void> = (arg: TArg) => TResult;
 
@@ -19,8 +20,10 @@ export const AuthPopupForm: FC<{
   const {
     loginWithCredentials,
     registerWithCredentials,
-    updateUserDisplayName
+    updateUserDisplayName,
+    linkUserWithCredentials
   } = useAuthService();
+  const { user } = useAuth();
   const [error, setError] = React.useState<string | null>(null);
 
   const schema: yup.SchemaOf<typeof initialValues> = yup.object().shape({
@@ -53,9 +56,17 @@ export const AuthPopupForm: FC<{
       : loginWithCredentials(credentials);
   }
 
+  async function linkOrRegister(values: typeof initialValues) {
+    if (user) {
+      return await linkUserWithCredentials(user, values);
+    } else {
+      return await registerWithCredentials(values);
+    }
+  }
+
   async function onFormSubmit(values: typeof initialValues) {
     if (isNewUser) {
-      const registerResult = await registerWithCredentials(values);
+      const registerResult = await linkOrRegister(values);
       if (registerResult.success) {
         const updateResult = await updateUserDisplayName(
           values.displayName as string

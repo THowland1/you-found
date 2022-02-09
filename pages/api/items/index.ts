@@ -18,18 +18,46 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     const token = tokenAttempt.token;
     switch (req.method) {
       case 'GET':
-        const emailAddress = z.string().parse(req.query.emailAddress);
         const items = (await getItemsByFirebaseUserId(token.uid)) as IItem[];
         res.status(200).json(items);
       case 'POST':
         const randomId = generateRandomIdAsIntAndString(5);
+        const formData = newItemSchema.parse(req.body);
 
         // TODO - Make this collision-proof
         const newItem: IItem = {
-          ...newItemSchema.parse(req.body),
           itemId: randomId.asBase10Int,
           itemSlug: randomId.asBase31String,
-          firebaseUserId: token.uid
+          firebaseUserId: token.uid,
+          headline: formData.headline,
+          itemName: formData.itemName,
+          message: formData.message,
+          links: [
+            {
+              linkType: 'email',
+              showButton: formData.showEmailLink,
+              buttonText: 'Send me an email',
+              emailAddress: formData.emailAddress
+            },
+            {
+              linkType: 'whatsapp',
+              showButton: formData.showWhatsAppLink,
+              buttonText: 'Message me on WhatsApp',
+              phoneNumber: formData.phoneNumber
+            },
+            {
+              linkType: 'call',
+              showButton: formData.showPhoneCallLink,
+              buttonText: 'Send me an email',
+              phoneNumber: formData.phoneNumber
+            },
+            {
+              linkType: 'sms',
+              showButton: formData.showSMSLink,
+              buttonText: 'Send me a text',
+              phoneNumber: formData.phoneNumber
+            }
+          ]
         };
         const newItemDocument = await Item.create(newItem);
         const item = IItemSchema.parse(newItemDocument);
@@ -40,7 +68,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         break;
     }
   } catch (e) {
-    res.status(500);
+    console.log(e);
+    res.status(500).send({});
   }
 };
 

@@ -3,6 +3,7 @@ import { Button, Grid, Link, Typography, useTheme } from '@mui/material';
 import { getItemByItemSlug } from 'data-layer/getItemByItemSlug';
 import { IItem } from 'models/schema/item';
 import { GetServerSideProps, NextPage } from 'next';
+import React from 'react';
 import { honeycomb } from 'styles/backgrounds';
 import { z } from 'zod';
 
@@ -56,64 +57,40 @@ const ItemPage: NextPage<ServerSideProps> = ({ item }) => {
             padding={{ xs: 1, sm: 2 }}
           >
             <Typography variant="h3">{item.message}</Typography>
-            {item.showWhatsAppLink && (
-              <Grid item>
-                <Link
-                  href={'https://wa.me/' + item.phoneNumber}
-                  underline="none"
-                >
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    startIcon={<WhatsApp />}
-                    sx={{ paddingY: '1rem' }}
-                  >
-                    Message me on whatsapp
-                  </Button>
-                </Link>
-              </Grid>
-            )}
-            {item.showSMSLink && (
-              <Grid item>
-                <Link href={'sms:' + item.phoneNumber} underline="none">
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    startIcon={<Sms />}
-                    sx={{ paddingY: '1rem' }}
-                  >
-                    Send me a text
-                  </Button>
-                </Link>
-              </Grid>
-            )}
-            {item.showPhoneCallLink && (
-              <Grid item>
-                <Link href={'tel:' + item.phoneNumber} underline="none">
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    startIcon={<Phone />}
-                    sx={{ paddingY: '1rem' }}
-                  >
-                    Give me a call
-                  </Button>
-                </Link>
-              </Grid>
-            )}
-            {item.showEmailLink && (
-              <Grid item>
-                <Link href={'mailto:' + item.emailAddress} underline="none">
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    startIcon={<Email />}
-                    sx={{ paddingY: '1rem' }}
-                  >
-                    Email me
-                  </Button>
-                </Link>
-              </Grid>
+            {item.links.map(
+              (link, index) =>
+                link.showButton && (
+                  <Grid item key={index}>
+                    {link.linkType === 'whatsapp' && (
+                      <LinkButton
+                        href={'https://wa.me/' + link.phoneNumber}
+                        buttonText={link.buttonText}
+                        icon={<WhatsApp />}
+                      />
+                    )}
+                    {link.linkType === 'email' && (
+                      <LinkButton
+                        href={'mailto:' + link.emailAddress}
+                        buttonText={link.buttonText}
+                        icon={<Email />}
+                      />
+                    )}
+                    {link.linkType === 'sms' && (
+                      <LinkButton
+                        href={'sms:' + link.phoneNumber}
+                        buttonText={link.buttonText}
+                        icon={<Sms />}
+                      />
+                    )}
+                    {link.linkType === 'call' && (
+                      <LinkButton
+                        href={'tel:' + link.phoneNumber}
+                        buttonText={link.buttonText}
+                        icon={<Phone />}
+                      />
+                    )}
+                  </Grid>
+                )
             )}
 
             <Grid item margin="auto">
@@ -164,6 +141,26 @@ const ItemPage: NextPage<ServerSideProps> = ({ item }) => {
 };
 
 export default ItemPage;
+
+type LinkButtonProps = {
+  href: string;
+  icon: React.ReactNode;
+  buttonText: string;
+};
+function LinkButton(props: LinkButtonProps) {
+  return (
+    <Link href={props.href} underline="none">
+      <Button
+        fullWidth
+        variant="contained"
+        startIcon={props.icon}
+        sx={{ paddingY: '1rem' }}
+      >
+        {props.buttonText}
+      </Button>
+    </Link>
+  );
+}
 
 export const getServerSideProps: GetServerSideProps<ServerSideProps> = async ({
   query

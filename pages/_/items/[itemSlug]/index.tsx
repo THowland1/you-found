@@ -24,7 +24,6 @@ const ItemEditPage: NextPage<ServerSideProps> = ({ item }) => {
         <title>Update code</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <ItemForm initialValues={item} onSubmit={postNewItem} />
     </>
   );
 };

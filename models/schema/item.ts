@@ -3,99 +3,45 @@ import { z } from 'zod';
 import { IMongooseDocument } from '../mongoose/IMongooseDocument';
 import { IMongooseRef } from '../mongoose/IMongooseRef';
 import { SchemaNames } from '../mongoose/schema-names';
-import { IUserDocument } from './user';
-import { toZod } from 'tozod';
 
-export const itemValidation = {
-  itemName: {
-    minLength: 1,
-    maxLength: 50
-  }
-};
+const IItemLinkSchema = z.object({
+  showButton: z.boolean(),
+  buttonText: z.string()
+});
+const IItemLinkWhatsappLinkSchema = IItemLinkSchema.extend({
+  linkType: z.literal('whatsapp'),
+  phoneNumber: z.string()
+});
+const IItemLinkEmailLinkSchema = IItemLinkSchema.extend({
+  linkType: z.literal('email'),
+  emailAddress: z.string()
+});
+const IItemLinkCallLinkSchema = IItemLinkSchema.extend({
+  linkType: z.literal('call'),
+  phoneNumber: z.string()
+});
+const IItemLinkSmsLinkSchema = IItemLinkSchema.extend({
+  linkType: z.literal('sms'),
+  phoneNumber: z.string()
+});
 
-export enum IItemPageLinkType {
-  SMS = 'sms',
-  WhatsApp = 'whatsapp',
-  Email = 'email'
-}
-
-interface IBaseItemPageLink {
-  linkId: string;
-}
-
-export interface IItemPageSMSLink extends IBaseItemPageLink {
-  type: IItemPageLinkType.SMS;
-  phoneNumberId: string;
-  text: string;
-}
-
-export interface IItemPageWhatsAppLink extends IBaseItemPageLink {
-  type: IItemPageLinkType.WhatsApp;
-  phoneNumberId: string;
-  text: string;
-}
-
-export interface IItemPageEmailLink extends IBaseItemPageLink {
-  type: IItemPageLinkType.Email;
-  emailAddressId: string;
-  text: string;
-}
-
-export type IItemPageLink =
-  | IItemPageSMSLink
-  | IItemPageWhatsAppLink
-  | IItemPageEmailLink;
-
-export interface IItemPage {
-  message: string;
-  links: IItemPageLink[];
-}
-
-export interface IItem {
-  itemId: number;
-  itemSlug: string;
-  firebaseUserId: string;
-  emailAddress: string;
-  headline: string;
-  itemName: string;
-  message: string;
-  phoneNumber: string;
-  showEmailLink: boolean;
-  showPhoneCallLink: boolean;
-  showSMSLink: boolean;
-  showWhatsAppLink: boolean;
-}
-
-export const IItemSchema: toZod<IItem> = z.object({
+export const IItemSchema = z.object({
   itemId: z.number(),
   itemSlug: z.string(),
   firebaseUserId: z.string(),
-  emailAddress: z.string(),
   headline: z.string(),
   itemName: z.string(),
   message: z.string(),
-  phoneNumber: z.string(),
-  showEmailLink: z.boolean(),
-  showPhoneCallLink: z.boolean(),
-  showSMSLink: z.boolean(),
-  showWhatsAppLink: z.boolean()
+  links: z.array(
+    z.union([
+      IItemLinkWhatsappLinkSchema,
+      IItemLinkEmailLinkSchema,
+      IItemLinkCallLinkSchema,
+      IItemLinkSmsLinkSchema
+    ])
+  )
 });
-
-export const IUserProps: { [key in keyof IItem]: key } = {
-  itemId: 'itemId',
-  itemSlug: 'itemSlug',
-  firebaseUserId: 'firebaseUserId',
-  emailAddress: 'emailAddress',
-  headline: 'headline',
-  itemName: 'itemName',
-  message: 'message',
-  phoneNumber: 'phoneNumber',
-  showEmailLink: 'showEmailLink',
-  showPhoneCallLink: 'showPhoneCallLink',
-  showSMSLink: 'showSMSLink',
-  showWhatsAppLink: 'showWhatsAppLink'
-};
-
+export type IItem = z.infer<typeof IItemSchema>;
 export type IItemDocument = IMongooseDocument<IItem>;
 export type IItemRef = IMongooseRef<IItemDocument>;
 
@@ -103,15 +49,41 @@ const ItemSchema: Schema = new Schema({
   itemId: { type: Number, required: true },
   itemSlug: { type: String, required: true },
   firebaseUserId: { type: String, required: true },
-  emailAddress: { type: String, required: true },
   headline: { type: String, required: true },
   itemName: { type: String, required: true },
   message: { type: String, required: true },
-  phoneNumber: { type: String, required: true },
-  showEmailLink: { type: Boolean, required: true },
-  showPhoneCallLink: { type: Boolean, required: true },
-  showSMSLink: { type: Boolean, required: true },
-  showWhatsAppLink: { type: Boolean, required: true }
+
+  links: [
+    {
+      linkType: {
+        type: String,
+        required: true,
+        enum: ['whatsapp', 'email', 'call', 'sms']
+      },
+      showButton: {
+        type: Boolean,
+        required: true
+      },
+      buttonText: {
+        type: String,
+        required: true
+      },
+      phoneNumber: {
+        type: String,
+        required: function () {
+          const self = this as any;
+          return ['whatsapp', 'call', 'sms'].includes(self.linkType);
+        }
+      },
+      emailAddress: {
+        type: String,
+        required: function () {
+          const self = this as any;
+          return ['email'].includes(self.linkType);
+        }
+      }
+    }
+  ]
 });
 
 const getModel = () => {

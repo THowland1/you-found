@@ -133,7 +133,7 @@ const ItemsPage: NextPage<ServerSideProps> = ({
                         disablePadding
                         secondaryAction={
                           <Stack direction="row" gap=".5rem">
-                            {/* <NextLink
+                            <NextLink
                               href={`/_/items/${item.itemSlug}`}
                               passHref
                             >
@@ -142,7 +142,7 @@ const ItemsPage: NextPage<ServerSideProps> = ({
                                   <Edit />
                                 </IconButton>
                               </Tooltip>
-                            </NextLink> */}
+                            </NextLink>
                             <Tooltip title="Delete">
                               <IconButton
                                 edge="end"

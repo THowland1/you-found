@@ -97,3 +97,5 @@ const getModel = () => {
 export const Item = getModel();
 
 export type IItemPage = any;
+export type IItemPageLink= any;
+export type IItemPageLinkType = any;

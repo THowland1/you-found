@@ -95,3 +95,5 @@ const getModel = () => {
 };
 
 export const Item = getModel();
+
+export type IItemPage = any;

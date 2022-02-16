@@ -3,38 +3,34 @@ import {
   Email,
   Phone as PhoneIcon,
   Sms,
-  WhatsApp,
-  Visibility
+  Visibility,
+  WhatsApp
 } from '@mui/icons-material';
-
 import {
   Box,
-  Button,
   Fade,
-  IconButton,
-  SpeedDial,
-  Modal,
-  Dialog,
-  DialogContent,
-  Stack,
-  Theme,
-  SxProps,
-  Tooltip,
-  Paper,
-  Typography,
-  MenuItem,
+  InputAdornment,
   ListItemIcon,
   ListItemText,
-  ListItem,
-  InputAdornment
+  MenuItem,
+  Modal,
+  Paper,
+  SpeedDial,
+  Stack,
+  SxProps,
+  Theme,
+  Tooltip,
+  Typography
 } from '@mui/material';
 import axios from 'axios';
-import ItemForm from 'components/items/ItemForm';
+import FormikSelectField from 'components/fields/FormikSelectField';
+import FormikSwitchField from 'components/fields/FormikSwitchField';
+import FormikTextField from 'components/fields/FormikTextField';
 import LandingPage from 'components/items/LandingPage';
 import Shell from 'components/shared/shell';
-import { getItemById } from 'data-layer/getItemById';
 import { getItemByItemSlug } from 'data-layer/getItemByItemSlug';
-import { Formik, Form, FieldArray } from 'formik';
+import { FieldArray, Form, Formik } from 'formik';
+import formikPathBuilder from 'formik-path-builder';
 import { INewItem } from 'models/new-item';
 import { IItem, IItemSchema } from 'models/schema/item';
 import { GetServerSideProps, NextPage } from 'next';
@@ -43,9 +39,6 @@ import Head from 'next/head';
 import React, { useState } from 'react';
 import { z } from 'zod';
 import { toFormikValidationSchema } from 'zod-formik-adapter';
-import formikPathBuilder from 'formik-path-builder';
-import FormikTextField from 'components/fields/FormikTextField';
-import FormikSelectField from 'components/fields/FormikSelectField';
 
 const LINKTYPES: Record<
   'whatsapp' | 'call' | 'sms' | 'email',
@@ -83,86 +76,142 @@ const ItemEditPage: NextPage<ServerSideProps> = ({ item }) => {
           <Form>
             <Shell>
               <Stack direction="row" sx={{ inset: 0 }} position={'absolute'}>
-                <Stack flex={1} padding={2}>
-                  <Typography padding={1} paddingBottom={0.5} variant="h4">
-                    Headline
-                  </Typography>
-                  <Paper sx={{ padding: 1 }}>
-                    <FormikTextField fullWidth name={p('headline')()} />
-                  </Paper>
-                  <Typography padding={1} paddingBottom={0.5} variant="h4">
-                    Message
-                  </Typography>
-                  <Paper sx={{ padding: 1 }}>
-                    <FormikTextField
-                      fullWidth
-                      multiline
-                      name={p('message')()}
-                    />
-                  </Paper>
-                  <Typography padding={1} paddingBottom={0.5} variant="h4">
-                    Links
-                  </Typography>
-                  <FieldArray name={p('links')()}>
-                    {arrayHelpers =>
-                      values.links.map((link, i) => (
-                        <Paper key={i} sx={{ padding: 1 }}>
-                          <FormikSelectField
-                            size="small"
-                            name={`links.${i}.linkType`}
-                            renderValue={(value: string) =>
-                              LINKTYPES[value].label
-                            }
-                            startAdornment={
-                              <InputAdornment position="start">
-                                {LINKTYPES[values.links[i].linkType].icon}
-                              </InputAdornment>
-                            }
-                          >
-                            <MenuItem value="email">
-                              <ListItemIcon>
-                                <Email />
-                              </ListItemIcon>
-                              <ListItemText>Email</ListItemText>
-                            </MenuItem>
-                            <MenuItem value="whatsapp">
-                              <ListItemIcon>
-                                <WhatsApp />
-                              </ListItemIcon>
-                              <ListItemText>WhatsApp</ListItemText>
-                            </MenuItem>
-                            <MenuItem value="call">
-                              <ListItemIcon>
-                                <PhoneIcon />
-                              </ListItemIcon>
-                              <ListItemText>Phone</ListItemText>
-                            </MenuItem>
-                            <MenuItem value="sms">
-                              <ListItemIcon>
-                                <Sms />
-                              </ListItemIcon>
-                              <ListItemText>SMS</ListItemText>
-                            </MenuItem>
-                          </FormikSelectField>
-                        </Paper>
-                      ))
-                    }
-                  </FieldArray>
-                  <Box
-                    sx={{
-                      position: 'fixed',
-                      bottom: '2rem',
-                      display: { xs: 'block', md: 'none' },
-                      width: '100%'
-                    }}
-                  >
-                    <SpeedDial
-                      ariaLabel="see preview"
-                      onClick={_ => setShowPreview(!showPreview)}
-                      icon={showPreview ? <Close /> : <Visibility />}
-                    ></SpeedDial>
-                  </Box>
-                </Stack>
+                <Box flex={1}>
+                  <Stack maxWidth="40rem" padding={2} margin="auto">
+                    <Typography padding={1} paddingBottom={0.5} variant="h4">
+                      Headline
+                    </Typography>
+                    <Paper sx={{ padding: 1 }}>
+                      <FormikTextField fullWidth name={p('headline')()} />
+                    </Paper>
+                    <Typography padding={1} paddingBottom={0.5} variant="h4">
+                      Message
+                    </Typography>
+                    <Paper sx={{ padding: 1 }}>
+                      <FormikTextField
+                        fullWidth
+                        multiline
+                        name={p('message')()}
+                      />
+                    </Paper>
+                    <Typography padding={1} paddingBottom={0.5} variant="h4">
+                      Links
+                    </Typography>
+                    <Stack gap={1}>
+                      <FieldArray name={p('links')()}>
+                        {arrayHelpers =>
+                          values.links.map((link, i) => {
+                            return (
+                              <Paper key={i} sx={{ padding: 1 }}>
+                                <Stack gap={1}>
+                                  <Stack
+                                    direction="row"
+                                    justifyContent="space-between"
+                                  >
+                                    <Box flex={1} maxWidth="11rem">
+                                      <FormikSelectField<
+                                        'whatsapp' | 'email' | 'call' | 'sms'
+                                      >
+                                        size="small"
+                                        name={`links.${i}.linkType`}
+                                        renderValue={(
+                                          value:
+                                            | 'whatsapp'
+                                            | 'email'
+                                            | 'call'
+                                            | 'sms'
+                                        ) => <>{LINKTYPES[value].label}</>}
+                                        startAdornment={
+                                          <InputAdornment position="start">
+                                            {
+                                              LINKTYPES[
+                                                values.links[i].linkType
+                                              ].icon
+                                            }
+                                          </InputAdornment>
+                                        }
+                                      >
+                                        <MenuItem value="email">
+                                          <ListItemIcon>
+                                            <Email />
+                                          </ListItemIcon>
+                                          <ListItemText>Email</ListItemText>
+                                        </MenuItem>
+                                        <MenuItem value="whatsapp">
+                                          <ListItemIcon>
+                                            <WhatsApp />
+                                          </ListItemIcon>
+                                          <ListItemText>WhatsApp</ListItemText>
+                                        </MenuItem>
+                                        <MenuItem value="call">
+                                          <ListItemIcon>
+                                            <PhoneIcon />
+                                          </ListItemIcon>
+                                          <ListItemText>Phone</ListItemText>
+                                        </MenuItem>
+                                        <MenuItem value="sms">
+                                          <ListItemIcon>
+                                            <Sms />
+                                          </ListItemIcon>
+                                          <ListItemText>SMS</ListItemText>
+                                        </MenuItem>
+                                      </FormikSelectField>
+                                    </Box>
+                                    <Box flex={1} maxWidth="11rem">
+                                      {['whatsapp', 'call', 'sms'].includes(
+                                        values.links[i].linkType
+                                      ) && (
+                                        <FormikTextField
+                                          size="small"
+                                          name={`links.${i}.phoneNumber`}
+                                        />
+                                      )}
+                                      {['email'].includes(
+                                        values.links[i].linkType
+                                      ) && (
+                                        <FormikTextField
+                                          size="small"
+                                          name={`links.${i}.emailAddress`}
+                                        />
+                                      )}
+                                    </Box>
+                                    <Box display="flex" justifyContent="end">
+                                      <FormikSwitchField
+                                        name={p('links')(i)('showButton')()}
+                                        label=""
+                                      />
+                                    </Box>
+                                  </Stack>
+                                  <Stack>
+                                    <FormikTextField
+                                      size="small"
+                                      name={p('links')(i)('buttonText')()}
+                                    />
+                                  </Stack>
+                                </Stack>
+                              </Paper>
+                            );
+                          })
+                        }
+                      </FieldArray>
+                    </Stack>
+
+                    <Box
+                      sx={{
+                        position: 'fixed',
+                        bottom: '2rem',
+                        display: { xs: 'block', md: 'none' },
+                        width: '100%'
+                      }}
+                    >
+                      <SpeedDial
+                        ariaLabel="see preview"
+                        onClick={_ => setShowPreview(!showPreview)}
+                        icon={showPreview ? <Close /> : <Visibility />}
+                      ></SpeedDial>
+                    </Box>
+                  </Stack>
+                </Box>
 
                 <Stack
                   display={{ xs: 'none', md: 'flex' }}

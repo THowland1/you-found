@@ -10,14 +10,14 @@ import { useState } from 'react';
 import { v4 } from 'uuid';
 
 type FormikFieldProps = { name: string };
-function FormikSelectField({
+function FormikSelectField<T>({
   name,
   mapValue = {
     formikToMui: formikValue => formikValue,
     muiToFormik: muiValue => muiValue
   },
   ...props
-}: SelectProps &
+}: SelectProps<T> &
   FormikFieldProps & {
     mapValue?: {
       formikToMui: (formikValue: any) => any;

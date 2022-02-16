@@ -1,9 +1,9 @@
 import {
   Checkbox,
   CheckboxProps,
+  FormControl,
   FormControlLabel,
   FormControlLabelProps,
-  FormControl,
   FormHelperText
 } from '@mui/material';
 import { useField } from 'formik';

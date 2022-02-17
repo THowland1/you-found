@@ -194,23 +194,26 @@ const ItemEditPage: NextPage<ServerSideProps> = ({ item }) => {
                           })
                         }
                       </FieldArray>
+                      <Box
+                        height="4rem"
+                        display={{ xs: 'block', md: 'none' }}
+                      ></Box>
                     </Stack>
-
-                    <Box
-                      sx={{
-                        position: 'fixed',
-                        bottom: '2rem',
-                        display: { xs: 'block', md: 'none' },
-                        width: '100%'
-                      }}
-                    >
-                      <SpeedDial
-                        ariaLabel="see preview"
-                        onClick={_ => setShowPreview(!showPreview)}
-                        icon={showPreview ? <Close /> : <Visibility />}
-                      ></SpeedDial>
-                    </Box>
                   </Stack>
+                  <Box
+                    sx={{
+                      position: 'fixed',
+                      bottom: '2rem',
+                      display: { xs: 'block', md: 'none' },
+                      width: '100%'
+                    }}
+                  >
+                    <SpeedDial
+                      ariaLabel="see preview"
+                      onClick={_ => setShowPreview(!showPreview)}
+                      icon={showPreview ? <Close /> : <Visibility />}
+                    ></SpeedDial>
+                  </Box>
                 </Box>
 
                 <Stack
@@ -259,26 +262,28 @@ const ItemEditPage: NextPage<ServerSideProps> = ({ item }) => {
 
 export default ItemEditPage;
 
-const Phone = ({ item, sx = {} }: { item: IItem; sx?: SxProps<Theme> }) => (
-  <Box
-    sx={{
-      bgcolor: 'white',
-      borderRadius: '3rem',
-      height: '600px',
-      width: '352px',
-      border: 'solid 16px black',
-      margin: 'auto',
-      position: 'relative',
-      overflow: 'auto',
-      '::-webkit-scrollbar': {
-        display: 'none'
-      },
-      ...sx
-    }}
-  >
-    <LandingPage item={item} />
-  </Box>
-);
+const Phone = ({ item, sx = {} }: { item: IItem; sx?: SxProps<Theme> }) => {
+  return (
+    <Box
+      sx={{
+        bgcolor: 'white',
+        borderRadius: '3rem',
+        height: '600px',
+        width: '352px',
+        border: 'solid 16px black',
+        margin: 'auto',
+        position: 'relative',
+        overflow: 'auto',
+        '::-webkit-scrollbar': {
+          display: 'none'
+        },
+        ...sx
+      }}
+    >
+      <LandingPage item={item} />
+    </Box>
+  );
+};
 
 export const getServerSideProps: GetServerSideProps<ServerSideProps> = async ({
   query

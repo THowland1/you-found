@@ -1,17 +1,124 @@
 import { Email, Phone, Sms, WhatsApp } from '@mui/icons-material';
-import { Button, Grid, Link, Typography, useTheme } from '@mui/material';
-import { getItemByItemSlug } from 'data-layer/getItemByItemSlug';
+import {
+  Button,
+  createTheme,
+  Grid,
+  Link,
+  Typography,
+  useTheme
+} from '@mui/material';
+import { ThemeProvider } from '@mui/system';
 import { IItem } from 'models/schema/item';
-import { GetServerSideProps, NextPage } from 'next';
+import { NextPage } from 'next';
 import React from 'react';
-import { honeycomb } from 'styles/backgrounds';
-import { z } from 'zod';
+
+type LandingPageTheme = {
+  header: {
+    background: string;
+    color: string;
+  };
+  main: {
+    paddingTop: boolean;
+    background: string;
+    color: string;
+    button: {
+      backgroundColor: string;
+      color: string;
+    };
+    link: {
+      color: string;
+    };
+  };
+};
+
+const LANDING_PAGE_THEMES: Record<'slack' | 'default', LandingPageTheme> = {
+  default: {
+    header: {
+      background: '#4A154B',
+      color: '#FFF'
+    },
+    main: {
+      paddingTop: true,
+      background: '#FFF',
+      color: '#4A154B',
+      button: {
+        backgroundColor: '#4A154B',
+        color: '#FFF'
+      },
+      link: {
+        color: '#4A154B'
+      }
+    }
+  },
+  slack: {
+    header: {
+      background: '#4A154B',
+      color: '#FFF'
+    },
+    main: {
+      paddingTop: false,
+      background: '#4A154B',
+      color: '#FFF',
+      button: {
+        backgroundColor: '#1064A3',
+        color: '#FFF'
+      },
+      link: {
+        color: '#36c5f0'
+      }
+    }
+  }
+};
 
 type ServerSideProps = { item: IItem };
 const LandingPage: NextPage<ServerSideProps> = ({ item }) => {
   const theme = useTheme();
+
+  const swatch = LANDING_PAGE_THEMES.slack;
+
+  const bodyTheme = createTheme({
+    ...theme,
+
+    breakpoints: {
+      values: {
+        xs: 0,
+        sm: 9999,
+        md: 9999,
+        lg: 9999,
+        xl: 9999
+      }
+    }
+  });
+  const headerTheme = createTheme({
+    ...bodyTheme,
+    palette: {
+      ...bodyTheme.palette,
+      background: {
+        default: swatch.header.background
+      },
+      text: { primary: swatch.header.color }
+    }
+  });
+  const mainTheme = createTheme({
+    ...bodyTheme,
+    palette: {
+      ...bodyTheme.palette,
+      primary: {
+        main: swatch.main.button.backgroundColor,
+        contrastText: swatch.main.button.color
+      },
+      info: {
+        main: swatch.main.link.color
+      },
+      background: {
+        default: swatch.main.background
+      },
+      text: { primary: swatch.main.color }
+    }
+  });
+
   return (
-    <>
+    <ThemeProvider theme={bodyTheme}>
       <Grid
         container
         direction={'column'}
@@ -21,87 +128,99 @@ const LandingPage: NextPage<ServerSideProps> = ({ item }) => {
           inset: 0
         }}
       >
-        <Grid
-          item
-          sx={{
-            backgroundColor: theme.palette.grey[900],
-            color: theme.palette.getContrastText(theme.palette.grey[900])
-          }}
-        >
+        <ThemeProvider theme={headerTheme}>
           <Grid
-            container
-            maxWidth={theme.breakpoints.values.sm}
-            margin={'auto'}
-            paddingX={{ xs: '1rem', sm: '2rem' }}
-            paddingY={'2rem'}
+            item
+            sx={{
+              background: theme => theme.palette.background.default,
+              color: theme => theme.palette.text.primary
+            }}
           >
-            <Typography variant="h2">{item.headline}</Typography>
-          </Grid>
-        </Grid>
-        <Grid
-          item
-          xs
-          sx={{
-            background: honeycomb(
-              theme.palette.background.default,
-              theme.palette.grey[200]
-            )
-          }}
-        >
-          <Grid
-            container
-            maxWidth={theme.breakpoints.values.sm}
-            margin="auto"
-            direction="column"
-            gap={2}
-            padding={{ xs: 1, sm: 2 }}
-          >
-            <Typography variant="h3">{item.message}</Typography>
-            {item.links.map(
-              (link, index) =>
-                link.showButton && (
-                  <Grid item key={index}>
-                    {link.linkType === 'whatsapp' && (
-                      <LinkButton
-                        href={'https://wa.me/' + link.phoneNumber}
-                        buttonText={link.buttonText}
-                        icon={<WhatsApp />}
-                      />
-                    )}
-                    {link.linkType === 'email' && (
-                      <LinkButton
-                        href={'mailto:' + link.emailAddress}
-                        buttonText={link.buttonText}
-                        icon={<Email />}
-                      />
-                    )}
-                    {link.linkType === 'sms' && (
-                      <LinkButton
-                        href={'sms:' + link.phoneNumber}
-                        buttonText={link.buttonText}
-                        icon={<Sms />}
-                      />
-                    )}
-                    {link.linkType === 'call' && (
-                      <LinkButton
-                        href={'tel:' + link.phoneNumber}
-                        buttonText={link.buttonText}
-                        icon={<Phone />}
-                      />
-                    )}
-                  </Grid>
-                )
-            )}
-
-            <Grid item margin="auto">
-              <Link href={'/'} underline="hover">
-                Powered by YouFound
-              </Link>
+            <Grid
+              container
+              maxWidth={theme.breakpoints.values.sm}
+              margin={'auto'}
+              padding={'1.5rem'}
+            >
+              <Typography variant="h2">{item.headline}</Typography>
             </Grid>
           </Grid>
-        </Grid>
+        </ThemeProvider>
+        <ThemeProvider theme={mainTheme}>
+          <Grid
+            item
+            xs
+            sx={{
+              background: theme => theme.palette.background.default
+            }}
+          >
+            <Grid
+              container
+              maxWidth={theme.breakpoints.values.sm}
+              margin="auto"
+              direction="column"
+              gap="1.5rem"
+              padding="1.5rem"
+              paddingTop={swatch.main.paddingTop ? undefined : 0}
+            >
+              <Typography
+                variant="h4"
+                sx={{ opacity: 0.5 }}
+                color={theme => theme.palette.text.primary}
+              >
+                {item.message}
+              </Typography>
+              {item.links.map(
+                (link, index) =>
+                  link.showButton && (
+                    <Grid item key={index}>
+                      {link.linkType === 'whatsapp' && (
+                        <LinkButton
+                          href={'https://wa.me/' + link.phoneNumber}
+                          buttonText={link.buttonText}
+                          icon={<WhatsApp />}
+                        />
+                      )}
+                      {link.linkType === 'email' && (
+                        <LinkButton
+                          href={'mailto:' + link.emailAddress}
+                          buttonText={link.buttonText}
+                          icon={<Email />}
+                        />
+                      )}
+                      {link.linkType === 'sms' && (
+                        <LinkButton
+                          href={'sms:' + link.phoneNumber}
+                          buttonText={link.buttonText}
+                          icon={<Sms />}
+                        />
+                      )}
+                      {link.linkType === 'call' && (
+                        <LinkButton
+                          href={'tel:' + link.phoneNumber}
+                          buttonText={link.buttonText}
+                          icon={<Phone />}
+                        />
+                      )}
+                    </Grid>
+                  )
+              )}
+
+              <Grid item marginX="auto" marginTop="3rem">
+                <Link
+                  href={'/'}
+                  underline="hover"
+                  color="info.main"
+                  sx={{ opacity: 0.8 }}
+                >
+                  Powered by YouFound
+                </Link>
+              </Grid>
+            </Grid>
+          </Grid>
+        </ThemeProvider>
       </Grid>
-    </>
+    </ThemeProvider>
   );
 };
 

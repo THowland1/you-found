@@ -1,21 +1,30 @@
 import {
+  AlternateEmail,
   Close,
+  Dialpad,
   Email,
   Phone as PhoneIcon,
   Save,
   Sms,
+  TextFields,
   Visibility,
   WhatsApp
 } from '@mui/icons-material';
 import {
+  Alert,
   Box,
+  CircularProgress,
+  Fab,
   Fade,
+  Grow,
   InputAdornment,
   ListItemIcon,
   ListItemText,
   MenuItem,
   Modal,
   Paper,
+  Slide,
+  Snackbar,
   SpeedDial,
   Stack,
   SxProps,
@@ -56,12 +65,16 @@ const p = formikPathBuilder<IItem>();
 
 const ItemEditPage: NextPage<ServerSideProps> = ({ item }) => {
   const [initialValues, setInitialValues] = useState(item);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const saveChanges = async (values: IItem) => {
     const newValues = await axios.put(`/api/items/${item.itemSlug}`, values);
     setInitialValues(newValues.data);
+    setShowSuccess(true);
+    setTimeout(_ => setShowSuccess(false), 5000);
   };
   const [showPreview, setShowPreview] = useState(false);
+  const containerRef = React.useRef<HTMLElement | null>(null);
 
   return (
     <>
@@ -117,73 +130,96 @@ const ItemEditPage: NextPage<ServerSideProps> = ({ item }) => {
                                     direction="row"
                                     justifyContent="space-between"
                                   >
-                                    <Box flex={1} maxWidth="11rem">
-                                      <FormikSelectField<
-                                        'whatsapp' | 'email' | 'call' | 'sms'
-                                      >
-                                        size="small"
-                                        name={`links.${i}.linkType`}
-                                        renderValue={(
-                                          value:
-                                            | 'whatsapp'
-                                            | 'email'
-                                            | 'call'
-                                            | 'sms'
-                                        ) => <>{LINKTYPES[value].label}</>}
-                                        startAdornment={
-                                          <InputAdornment position="start">
-                                            {
-                                              LINKTYPES[
-                                                values.links[i].linkType
-                                              ].icon
-                                            }
-                                          </InputAdornment>
-                                        }
-                                      >
-                                        <MenuItem value="email">
-                                          <ListItemIcon>
-                                            <Email />
-                                          </ListItemIcon>
-                                          <ListItemText>Email</ListItemText>
-                                        </MenuItem>
-                                        <MenuItem value="whatsapp">
-                                          <ListItemIcon>
-                                            <WhatsApp />
-                                          </ListItemIcon>
-                                          <ListItemText>WhatsApp</ListItemText>
-                                        </MenuItem>
-                                        <MenuItem value="call">
-                                          <ListItemIcon>
-                                            <PhoneIcon />
-                                          </ListItemIcon>
-                                          <ListItemText>Phone</ListItemText>
-                                        </MenuItem>
-                                        <MenuItem value="sms">
-                                          <ListItemIcon>
-                                            <Sms />
-                                          </ListItemIcon>
-                                          <ListItemText>SMS</ListItemText>
-                                        </MenuItem>
-                                      </FormikSelectField>
-                                    </Box>
-                                    <Box flex={1} maxWidth="11rem">
-                                      {['whatsapp', 'call', 'sms'].includes(
-                                        values.links[i].linkType
-                                      ) && (
-                                        <FormikTextField
+                                    <Stack flex={1} gap={1}>
+                                      <Box width="11rem">
+                                        <FormikSelectField<
+                                          'whatsapp' | 'email' | 'call' | 'sms'
+                                        >
                                           size="small"
-                                          name={`links.${i}.phoneNumber`}
-                                        />
-                                      )}
-                                      {['email'].includes(
-                                        values.links[i].linkType
-                                      ) && (
-                                        <FormikTextField
-                                          size="small"
-                                          name={`links.${i}.emailAddress`}
-                                        />
-                                      )}
-                                    </Box>
+                                          name={`links.${i}.linkType`}
+                                          renderValue={(
+                                            value:
+                                              | 'whatsapp'
+                                              | 'email'
+                                              | 'call'
+                                              | 'sms'
+                                          ) => <>{LINKTYPES[value].label}</>}
+                                          startAdornment={
+                                            <InputAdornment position="start">
+                                              {
+                                                LINKTYPES[
+                                                  values.links[i].linkType
+                                                ].icon
+                                              }
+                                            </InputAdornment>
+                                          }
+                                        >
+                                          <MenuItem value="email">
+                                            <ListItemIcon>
+                                              <Email />
+                                            </ListItemIcon>
+                                            <ListItemText>Email</ListItemText>
+                                          </MenuItem>
+                                          <MenuItem value="whatsapp">
+                                            <ListItemIcon>
+                                              <WhatsApp />
+                                            </ListItemIcon>
+                                            <ListItemText>
+                                              WhatsApp
+                                            </ListItemText>
+                                          </MenuItem>
+                                          <MenuItem value="call">
+                                            <ListItemIcon>
+                                              <PhoneIcon />
+                                            </ListItemIcon>
+                                            <ListItemText>Phone</ListItemText>
+                                          </MenuItem>
+                                          <MenuItem value="sms">
+                                            <ListItemIcon>
+                                              <Sms />
+                                            </ListItemIcon>
+                                            <ListItemText>SMS</ListItemText>
+                                          </MenuItem>
+                                        </FormikSelectField>
+                                      </Box>
+                                      <Box flex={1} maxWidth="20rem">
+                                        {['whatsapp', 'call', 'sms'].includes(
+                                          values.links[i].linkType
+                                        ) && (
+                                          <FormikTextField
+                                            fullWidth
+                                            size="small"
+                                            name={`links.${i}.phoneNumber`}
+                                            // variant="standard"
+                                            InputProps={{
+                                              startAdornment: (
+                                                <InputAdornment position="start">
+                                                  <Dialpad />
+                                                </InputAdornment>
+                                              )
+                                            }}
+                                          />
+                                        )}
+                                        {['email'].includes(
+                                          values.links[i].linkType
+                                        ) && (
+                                          <FormikTextField
+                                            fullWidth
+                                            size="small"
+                                            name={`links.${i}.emailAddress`}
+                                            // variant="standard"
+                                            InputProps={{
+                                              startAdornment: (
+                                                <InputAdornment position="start">
+                                                  <AlternateEmail />
+                                                </InputAdornment>
+                                              )
+                                            }}
+                                          />
+                                        )}
+                                      </Box>
+                                    </Stack>
+
                                     <Box display="flex" justifyContent="end">
                                       <FormikSwitchField
                                         name={p('links')(i)('showButton')()}
@@ -194,7 +230,15 @@ const ItemEditPage: NextPage<ServerSideProps> = ({ item }) => {
                                   <Stack>
                                     <FormikTextField
                                       size="small"
+                                      // variant="standard"
                                       name={p('links')(i)('buttonText')()}
+                                      InputProps={{
+                                        startAdornment: (
+                                          <InputAdornment position="start">
+                                            <TextFields />
+                                          </InputAdornment>
+                                        )
+                                      }}
                                     />
                                   </Stack>
                                 </Stack>
@@ -224,18 +268,68 @@ const ItemEditPage: NextPage<ServerSideProps> = ({ item }) => {
                         display: { xs: 'block', md: 'none' }
                       }}
                     >
-                      <SpeedDial
-                        ariaLabel="see preview"
+                      <Fab
+                        variant="extended"
+                        color="primary"
                         onClick={_ => setShowPreview(!showPreview)}
-                        icon={showPreview ? <Close /> : <Visibility />}
-                      ></SpeedDial>
+                      >
+                        <Visibility sx={{ mr: 1 }} />
+                        Preview
+                      </Fab>
                     </Box>
-                    <SpeedDial
-                      ariaLabel="save changes"
-                      onClick={async _ => await submitForm()}
-                      FabProps={{ disabled: !dirty }}
-                      icon={<Save />}
-                    ></SpeedDial>
+                    <Box position="relative">
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          left: 0,
+                          right: 0,
+                          bottom: '100%',
+                          marginBottom: '.5rem',
+                          display: 'flex',
+                          justifyContent: 'center'
+                        }}
+                      >
+                        <Grow in={showSuccess}>
+                          <Box ref={containerRef}>
+                            <Slide
+                              direction="up"
+                              container={containerRef.current}
+                              in={showSuccess}
+                            >
+                              <Alert
+                                variant="filled"
+                                sx={{ paddingY: 0, paddingX: '1rem' }}
+                              >
+                                Saved!
+                              </Alert>
+                            </Slide>
+                          </Box>
+                        </Grow>
+                      </Box>
+
+                      <Fab
+                        color="primary"
+                        variant="extended"
+                        onClick={async _ => await submitForm()}
+                        disabled={!dirty || isSubmitting}
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <CircularProgress
+                              color="inherit"
+                              size="1.5rem"
+                              sx={{ mr: 1 }}
+                            />
+                            Saving...
+                          </>
+                        ) : (
+                          <>
+                            <Save sx={{ mr: 1 }} />
+                            Save changes
+                          </>
+                        )}
+                      </Fab>
+                    </Box>
                   </Box>
                 </Box>
 

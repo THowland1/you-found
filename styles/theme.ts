@@ -1,4 +1,5 @@
 import { createTheme } from '@mui/material';
+import { green } from '@mui/material/colors';
 
 export const theme = createTheme({
   palette: {
@@ -25,12 +26,15 @@ export const theme = createTheme({
       '900': '#2D3B41'
     },
     success: {
-      '50': '#C9EEEA',
-      light: '#00C7B7',
-      main: '#00AD9F',
-      dark: '#15847B',
-      '900': '#0D544E'
+      main: green[400]
     },
+    // success: {
+    //   '50': '#C9EEEA',
+    //   light: '#00C7B7',
+    //   main: '#00AD9F',
+    //   dark: '#15847B',
+    //   '900': '#0D544E'
+    // },
     error: {
       '50': '#FED7E2',
       light: '#FC989F',

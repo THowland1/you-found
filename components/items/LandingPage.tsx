@@ -31,7 +31,10 @@ type LandingPageTheme = {
   };
 };
 
-const LANDING_PAGE_THEMES: Record<'slack' | 'default', LandingPageTheme> = {
+const LANDING_PAGE_THEMES: Record<
+  'slack' | 'default' | 'msteams',
+  LandingPageTheme
+> = {
   default: {
     header: {
       background: '#4A154B',
@@ -47,6 +50,24 @@ const LANDING_PAGE_THEMES: Record<'slack' | 'default', LandingPageTheme> = {
       },
       link: {
         color: '#4A154B'
+      }
+    }
+  },
+  msteams: {
+    header: {
+      background: '#26223D',
+      color: '#FFF'
+    },
+    main: {
+      paddingTop: false,
+      background: '#26223D',
+      color: '#FFF',
+      button: {
+        backgroundColor: '#6264A7',
+        color: '#FFF'
+      },
+      link: {
+        color: '#6264A7'
       }
     }
   },
@@ -74,7 +95,7 @@ type ServerSideProps = { item: IItem };
 const LandingPage: NextPage<ServerSideProps> = ({ item }) => {
   const theme = useTheme();
 
-  const swatch = LANDING_PAGE_THEMES.slack;
+  const swatch = LANDING_PAGE_THEMES.msteams;
 
   const bodyTheme = createTheme({
     ...theme,
@@ -207,12 +228,7 @@ const LandingPage: NextPage<ServerSideProps> = ({ item }) => {
               )}
 
               <Grid item marginX="auto" marginTop="3rem">
-                <Link
-                  href={'/'}
-                  underline="hover"
-                  color="info.main"
-                  sx={{ opacity: 0.8 }}
-                >
+                <Link href={'/'} underline="hover" color="info.main">
                   Powered by YouFound
                 </Link>
               </Grid>

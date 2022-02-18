@@ -2,6 +2,7 @@ import {
   Close,
   Email,
   Phone as PhoneIcon,
+  Save,
   Sms,
   Visibility,
   WhatsApp
@@ -54,10 +55,11 @@ type ServerSideProps = { item: IItem };
 const p = formikPathBuilder<IItem>();
 
 const ItemEditPage: NextPage<ServerSideProps> = ({ item }) => {
-  const router = useRouter();
-  const postNewItem = async (values: INewItem) => {
-    await axios.put(`/api/items/${item.itemSlug}`, values);
-    await router.push(`/_/items`);
+  const [initialValues, setInitialValues] = useState(item);
+
+  const saveChanges = async (values: IItem) => {
+    const newValues = await axios.put(`/api/items/${item.itemSlug}`, values);
+    setInitialValues(newValues.data);
   };
   const [showPreview, setShowPreview] = useState(false);
 
@@ -68,15 +70,16 @@ const ItemEditPage: NextPage<ServerSideProps> = ({ item }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Formik
-        initialValues={item}
+        initialValues={initialValues}
+        enableReinitialize
         validationSchema={toFormikValidationSchema(IItemSchema)}
-        onSubmit={_ => {}}
+        onSubmit={saveChanges}
       >
-        {({ values, submitForm, isSubmitting }) => (
+        {({ values, submitForm, isSubmitting, dirty }) => (
           <Form>
             <Shell>
               <Stack direction="row" sx={{ inset: 0 }} position={'absolute'}>
-                <Box flex={1}>
+                <Box flex={1} sx={{ overflowY: 'auto', top: 0, bottom: 0 }}>
                   <Stack maxWidth="40rem" padding={2} margin="auto">
                     <Typography padding={1} paddingBottom={0.5} variant="h4">
                       Headline
@@ -102,7 +105,13 @@ const ItemEditPage: NextPage<ServerSideProps> = ({ item }) => {
                         {arrayHelpers =>
                           values.links.map((link, i) => {
                             return (
-                              <Paper key={i} sx={{ padding: 1 }}>
+                              <Paper
+                                key={i}
+                                sx={{
+                                  padding: 1,
+                                  opacity: link.showButton ? 1 : 0.5
+                                }}
+                              >
                                 <Stack gap={1}>
                                   <Stack
                                     direction="row"
@@ -202,16 +211,30 @@ const ItemEditPage: NextPage<ServerSideProps> = ({ item }) => {
                   </Stack>
                   <Box
                     sx={{
-                      position: 'fixed',
+                      position: 'sticky',
                       bottom: '2rem',
-                      display: { xs: 'block', md: 'none' },
-                      width: '100%'
+                      width: '100%',
+                      display: 'flex',
+                      gap: '2rem',
+                      justifyContent: 'center'
                     }}
                   >
+                    <Box
+                      sx={{
+                        display: { xs: 'block', md: 'none' }
+                      }}
+                    >
+                      <SpeedDial
+                        ariaLabel="see preview"
+                        onClick={_ => setShowPreview(!showPreview)}
+                        icon={showPreview ? <Close /> : <Visibility />}
+                      ></SpeedDial>
+                    </Box>
                     <SpeedDial
-                      ariaLabel="see preview"
-                      onClick={_ => setShowPreview(!showPreview)}
-                      icon={showPreview ? <Close /> : <Visibility />}
+                      ariaLabel="save changes"
+                      onClick={async _ => await submitForm()}
+                      FabProps={{ disabled: !dirty }}
+                      icon={<Save />}
                     ></SpeedDial>
                   </Box>
                 </Box>

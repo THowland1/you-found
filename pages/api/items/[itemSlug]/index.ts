@@ -19,26 +19,24 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         }
         res.status(200).json(item);
         break;
-      case 'PUT':
-        console.log(req.body);
-        const { found: putFound } = await updateItemByItemSlug(
-          itemSlug,
-          req.body
-        );
-        if (putFound) {
+      case 'PUT': {
+        const response = await updateItemByItemSlug(itemSlug, req.body);
+        if (response.found) {
+          res.status(200).json(response.item);
+        } else {
+          res.status(404).end();
+        }
+        break;
+      }
+      case 'DELETE': {
+        const { found } = await deleteItemByItemSlug(itemSlug);
+        if (found) {
           res.status(204).end();
         } else {
           res.status(404).end();
         }
         break;
-      case 'DELETE':
-        const { found: deleteFound } = await deleteItemByItemSlug(itemSlug);
-        if (deleteFound) {
-          res.status(204).end();
-        } else {
-          res.status(404).end();
-        }
-        break;
+      }
       default:
         res.status(404).end();
         break;

@@ -32,3 +32,6 @@ secret.json
 
 # local SSL certificate
 /.ssl.local/
+
+# next-type-safe-routes
+@types

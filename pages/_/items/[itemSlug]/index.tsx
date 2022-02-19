@@ -37,6 +37,7 @@ import FormikSelectField from 'components/fields/FormikSelectField';
 import FormikSwitchField from 'components/fields/FormikSwitchField';
 import FormikTextField from 'components/fields/FormikTextField';
 import LandingPage from 'components/items/LandingPage';
+import Phone from 'components/shared/Phone';
 import Shell from 'components/shared/shell';
 import { getItemByItemSlug } from 'data-layer/getItemByItemSlug';
 import { FieldArray, Form, Formik } from 'formik';
@@ -378,29 +379,6 @@ const ItemEditPage: NextPage<ServerSideProps> = ({ item }) => {
 };
 
 export default ItemEditPage;
-
-const Phone = ({ item, sx = {} }: { item: IItem; sx?: SxProps<Theme> }) => {
-  return (
-    <Box
-      sx={{
-        bgcolor: 'white',
-        borderRadius: '3rem',
-        height: '600px',
-        width: '352px',
-        border: 'solid 16px black',
-        margin: 'auto',
-        position: 'relative',
-        overflow: 'auto',
-        '::-webkit-scrollbar': {
-          display: 'none'
-        },
-        ...sx
-      }}
-    >
-      <LandingPage item={item} />
-    </Box>
-  );
-};
 
 export const getServerSideProps: GetServerSideProps<ServerSideProps> = async ({
   query

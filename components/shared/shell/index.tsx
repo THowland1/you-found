@@ -20,8 +20,8 @@ export default function Shell({
         position: 'absolute',
         inset: 0,
         background: honeycomb(
-          theme.palette.background.default,
-          `${theme.palette.primary.dark}0a`
+          theme.palette.grey[100],
+          `${theme.palette.primary.light}1d`
         )
       }}
     >

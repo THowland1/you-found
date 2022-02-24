@@ -1,18 +1,21 @@
 import firebase from 'firebase/app';
 import useFirebase from 'utils/hooks/useFirebase';
 
-export type IAuthenticationSuccessResult = {
-  success: true;
-  userCredential: firebase.auth.UserCredential;
-};
-export type IAuthenticationFailureResult = {
-  success: false;
-  error: Error;
-};
+type Result<TSuccess> =
+  | ({
+      success: true;
+    } & TSuccess)
+  | {
+      success: false;
+      error: Error;
+    };
 
-export type IAuthenticationResult =
-  | IAuthenticationSuccessResult
-  | IAuthenticationFailureResult;
+export type IAuthenticationResult = Result<{
+  userCredential: firebase.auth.UserCredential;
+}>;
+export type IConfirmationResult = Result<{
+  confirmationResult: firebase.auth.ConfirmationResult;
+}>;
 
 export type ISuccessResult = { success: true };
 export type IFailureResult = { success: false; error: Error };
@@ -28,7 +31,6 @@ export const useAuthService = () => {
 
   async function loginOrRegisterWithFacebookPopup(): Promise<IAuthenticationResult> {
     const provider = new firebase.auth.FacebookAuthProvider();
-
     return firebase
       .auth()
       .signInWithPopup(provider)
@@ -92,6 +94,25 @@ export const useAuthService = () => {
       .catch(error => ({ success: false, error: error as Error } as const));
   }
 
+  async function linkWithPhoneNumber(
+    user: firebase.User,
+    phoneNumber: string
+  ): Promise<IConfirmationResult> {
+    const invisibleCaptcha = new firebase.auth.RecaptchaVerifier(
+      'new-phone-number-submit',
+      {
+        size: 'invisible'
+      }
+    );
+
+    return user
+      .linkWithPhoneNumber(phoneNumber, invisibleCaptcha)
+      .then(
+        confirmationResult => ({ success: true, confirmationResult } as const)
+      )
+      .catch(error => ({ success: false, error: error as Error } as const));
+  }
+
   async function updateUserDisplayName(displayName: string): Promise<IResult> {
     const user = firebase.auth().currentUser;
     if (!user) {
@@ -120,6 +141,7 @@ export const useAuthService = () => {
     updateUserDisplayName,
     registerAnonymously,
     linkUserWithCredentials,
+    linkWithPhoneNumber,
     logout
   };
 };

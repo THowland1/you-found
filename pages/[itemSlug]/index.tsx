@@ -1,6 +1,7 @@
 import { Email, Phone, Sms, WhatsApp } from '@mui/icons-material';
 import { Button, Grid, Link, Typography, useTheme } from '@mui/material';
 import LandingPage from 'components/items/LandingPage';
+import { addItemEventByItemSlug } from 'data-layer/addItemEventByItemSlug';
 import { getItemByItemSlug } from 'data-layer/getItemByItemSlug';
 import { IItem } from 'models/schema/item';
 import { GetServerSideProps, NextPage } from 'next';
@@ -25,6 +26,11 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async ({
 }) => {
   const itemSlug = z.string().parse(query.itemSlug);
   const item = await getItemByItemSlug(itemSlug);
+
+  await addItemEventByItemSlug(itemSlug, {
+    eventType: 'Visited',
+    datetime: new Date()
+  });
 
   if (item) {
     return { props: { item } };

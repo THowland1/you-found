@@ -32,6 +32,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           headline: formData.headline,
           itemName: formData.itemName,
           message: formData.message,
+          events: [],
           links: [
             {
               linkType: 'email',

@@ -25,6 +25,20 @@ const IItemLinkSmsLinkSchema = IItemLinkSchema.extend({
   phoneNumber: z.string()
 });
 
+export const IItemEventSchema = z.discriminatedUnion('eventType', [
+  z.object({
+    eventType: z.literal('Visited'),
+    datetime: z.date()
+  }),
+  z.object({
+    eventType: z.literal('MessageSent'),
+    datetime: z.date(),
+    messageSentProps: z.object({
+      message: z.string()
+    })
+  })
+]);
+
 export const IItemSchema = z.object({
   itemId: z.number(),
   itemSlug: z.string(),
@@ -39,11 +53,13 @@ export const IItemSchema = z.object({
       IItemLinkCallLinkSchema,
       IItemLinkSmsLinkSchema
     ])
-  )
+  ),
+  events: z.array(IItemEventSchema)
 });
 export type IItem = z.infer<typeof IItemSchema>;
 export type IItemDocument = IMongooseDocument<IItem>;
 export type IItemRef = IMongooseRef<IItemDocument>;
+export type IItemEvent = z.infer<typeof IItemEventSchema>;
 
 const ItemSchema: Schema = new Schema({
   itemId: { type: Number, required: true },
@@ -52,7 +68,24 @@ const ItemSchema: Schema = new Schema({
   headline: { type: String, required: true },
   itemName: { type: String, required: true },
   message: { type: String, required: true },
-
+  events: [
+    {
+      eventType: {
+        type: String,
+        required: true,
+        enum: ['Visited', 'MessageSent']
+      },
+      datetime: { type: Date, required: true },
+      messageSentProps: {
+        type: {
+          message: {
+            type: String,
+            required: true
+          }
+        }
+      }
+    }
+  ],
   links: [
     {
       linkType: {
@@ -97,5 +130,5 @@ const getModel = () => {
 export const Item = getModel();
 
 export type IItemPage = any;
-export type IItemPageLink= any;
+export type IItemPageLink = any;
 export type IItemPageLinkType = any;

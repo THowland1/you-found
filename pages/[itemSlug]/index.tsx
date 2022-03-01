@@ -8,10 +8,14 @@ import { GetServerSideProps, NextPage } from 'next';
 import React from 'react';
 import { honeycomb } from 'styles/backgrounds';
 import { z } from 'zod';
+import * as NS from 'utils/next-serialise';
 
 type ServerSideProps = { item: IItem };
-const ItemPage: NextPage<ServerSideProps> = ({ item }) => {
-  const theme = useTheme();
+const ItemPage: NextPage<NS.Serialized<ServerSideProps>> = ({
+  item: serialisedItem
+}) => {
+  const item = NS.deserialize<IItem>(serialisedItem);
+
   return (
     <>
       <LandingPage item={item} />
@@ -21,9 +25,9 @@ const ItemPage: NextPage<ServerSideProps> = ({ item }) => {
 
 export default ItemPage;
 
-export const getServerSideProps: GetServerSideProps<ServerSideProps> = async ({
-  query
-}) => {
+export const getServerSideProps: GetServerSideProps<
+  NS.Serialized<ServerSideProps>
+> = async ({ query }) => {
   const itemSlug = z.string().parse(query.itemSlug);
   const item = await getItemByItemSlug(itemSlug);
 
@@ -33,7 +37,7 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async ({
   });
 
   if (item) {
-    return { props: { item } };
+    return { props: NS.serialize({ item }) };
   } else {
     return {
       redirect: { destination: '404', statusCode: 404, permanent: false },

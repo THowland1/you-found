@@ -42,9 +42,10 @@ import QRCode from 'qrcode.react';
 import { z } from 'zod';
 import { useAuth } from 'components/shared/auth/useAuth';
 import { tryGetAuthToken } from 'utils/try-get-auth-token';
+import * as NS from 'utils/next-serialise';
 
 type ServerSideProps = {
-  items: IItem[];
+  items: NS.Serialized<IItem[]>;
   baseUrl: string;
 };
 const ItemsPage: NextPage<ServerSideProps> = ({
@@ -62,7 +63,7 @@ const ItemsPage: NextPage<ServerSideProps> = ({
       return (await axios.get<IItem[]>(`/api/items`)).data;
     },
     {
-      initialData: initialItems,
+      initialData: NS.deserialize(initialItems),
       refetchOnWindowFocus: true
     }
   );
@@ -233,10 +234,9 @@ export const getServerSideProps: GetServerSideProps<
   const token = tokenAttempt.token;
 
   const items = await getItemsByFirebaseUserId(token.uid!);
-
   if (items) {
     return {
-      props: { items, baseUrl }
+      props: { items: NS.serialize(items), baseUrl }
     } as const;
   } else {
     return {

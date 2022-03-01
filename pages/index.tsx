@@ -35,6 +35,7 @@ const exampleIItem: IItem = {
   headline: 'Hey! You found my power bank!',
   itemName: 'Book',
   message: 'I would appreciate if you could get in touch so I can have it back',
+  events: [],
   links: [
     {
       showButton: true,

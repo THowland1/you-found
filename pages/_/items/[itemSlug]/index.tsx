@@ -50,6 +50,7 @@ import Head from 'next/head';
 import React, { useState } from 'react';
 import { z } from 'zod';
 import { toFormikValidationSchema } from 'zod-formik-adapter';
+import * as NS from 'utils/next-serialise';
 
 const LINKTYPES: Record<
   'whatsapp' | 'call' | 'sms' | 'email',
@@ -61,10 +62,12 @@ const LINKTYPES: Record<
   email: { type: 'email', icon: <Email />, label: 'Email' }
 };
 
-type ServerSideProps = { item: IItem };
+type ServerSideProps = { item: NS.Serialized<IItem> };
 const p = formikPathBuilder<IItem>();
 
-const ItemEditPage: NextPage<ServerSideProps> = ({ item }) => {
+const ItemEditPage: NextPage<ServerSideProps> = props => {
+  const item = NS.deserialize<IItem>(props.item);
+
   const [initialValues, setInitialValues] = useState(item);
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -387,7 +390,7 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async ({
   const item = await getItemByItemSlug(itemSlug);
 
   if (item) {
-    return { props: { item } };
+    return { props: { item: NS.serialize(item) } };
   } else {
     return {
       redirect: { destination: '404', statusCode: 404, permanent: false },

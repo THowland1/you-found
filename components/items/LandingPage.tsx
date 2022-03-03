@@ -1,15 +1,33 @@
-import { Email, Phone, Sms, WhatsApp } from '@mui/icons-material';
+import {
+  ArrowRightAlt,
+  Email,
+  Phone,
+  Sms,
+  WhatsApp
+} from '@mui/icons-material';
+import { LoadingButton } from '@mui/lab';
 import {
   Button,
+  ButtonProps,
   createTheme,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Grid,
   Link,
+  TextField,
   Typography,
   useTheme
 } from '@mui/material';
-import { ThemeProvider } from '@mui/system';
-import { IItem } from 'models/schema/item';
+import { alpha, ThemeProvider } from '@mui/system';
+import axios from 'axios';
+import FormikTextField from 'components/fields/FormikTextField';
+import { Form, Formik } from 'formik';
+import { IItem, IItemEvent } from 'models/schema/item';
 import { NextPage } from 'next';
+import { getRoute } from 'next-type-safe-routes';
 import React from 'react';
 
 type LandingPageTheme = {
@@ -122,6 +140,7 @@ const LandingPage: NextPage<ServerSideProps> = ({ item }) => {
   });
   const mainTheme = createTheme({
     ...bodyTheme,
+
     palette: {
       ...bodyTheme.palette,
       primary: {
@@ -132,11 +151,35 @@ const LandingPage: NextPage<ServerSideProps> = ({ item }) => {
         main: swatch.main.link.color
       },
       background: {
-        default: swatch.main.background
+        default: swatch.main.background,
+        paper: swatch.main.background
       },
       text: { primary: swatch.main.color }
+    },
+    components: {
+      MuiOutlinedInput: {
+        styleOverrides: {
+          notchedOutline: {
+            borderColor: alpha(swatch.main.color, 0.2)
+          }
+        }
+      }
     }
   });
+
+  async function sendOneWayMessage(message: string) {
+    const route = getRoute({
+      route: '/api/items/[itemSlug]/events',
+      params: { itemSlug: item.itemSlug }
+    });
+    const response = await axios.post<IItemEvent>(route, {
+      eventType: 'MessageSent',
+      datetime: new Date(),
+      messageSentProps: {
+        message
+      }
+    });
+  }
 
   return (
     <ThemeProvider theme={bodyTheme}>
@@ -197,35 +240,60 @@ const LandingPage: NextPage<ServerSideProps> = ({ item }) => {
                     <Grid item key={index}>
                       {link.linkType === 'whatsapp' && (
                         <LinkButton
+                          fullWidth
+                          variant="contained"
+                          startIcon={<WhatsApp />}
+                          sx={{ paddingY: '1rem' }}
                           href={'https://wa.me/' + link.phoneNumber}
-                          buttonText={link.buttonText}
-                          icon={<WhatsApp />}
-                        />
+                        >
+                          {link.buttonText}
+                        </LinkButton>
                       )}
                       {link.linkType === 'email' && (
                         <LinkButton
+                          fullWidth
+                          variant="contained"
+                          startIcon={<Email />}
+                          sx={{ paddingY: '1rem' }}
                           href={'mailto:' + link.emailAddress}
-                          buttonText={link.buttonText}
-                          icon={<Email />}
-                        />
+                        >
+                          {link.buttonText}
+                        </LinkButton>
                       )}
                       {link.linkType === 'sms' && (
                         <LinkButton
+                          fullWidth
+                          variant="contained"
+                          startIcon={<Sms />}
+                          sx={{ paddingY: '1rem' }}
                           href={'sms:' + link.phoneNumber}
-                          buttonText={link.buttonText}
-                          icon={<Sms />}
-                        />
+                        >
+                          {link.buttonText}
+                        </LinkButton>
                       )}
                       {link.linkType === 'call' && (
                         <LinkButton
+                          fullWidth
+                          variant="contained"
+                          startIcon={<Phone />}
+                          sx={{ paddingY: '1rem' }}
                           href={'tel:' + link.phoneNumber}
-                          buttonText={link.buttonText}
-                          icon={<Phone />}
-                        />
+                        >
+                          {link.buttonText}
+                        </LinkButton>
                       )}
                     </Grid>
                   )
               )}
+              <DialogButton
+                fullWidth
+                variant="contained"
+                startIcon={<ArrowRightAlt />}
+                sx={{ paddingY: '1rem' }}
+                onSubmit={message => sendOneWayMessage(message)}
+              >
+                Send a one-way message
+              </DialogButton>
 
               <Grid item marginX="auto" marginTop="3rem">
                 <Link href={'/'} underline="hover" color="info.main">
@@ -244,20 +312,78 @@ export default LandingPage;
 
 type LinkButtonProps = {
   href: string;
-  icon: React.ReactNode;
-  buttonText: string;
-};
-function LinkButton(props: LinkButtonProps) {
+} & ButtonProps;
+function LinkButton({ href, ...props }: LinkButtonProps) {
   return (
-    <Link href={props.href} underline="none">
-      <Button
-        fullWidth
-        variant="contained"
-        startIcon={props.icon}
-        sx={{ paddingY: '1rem' }}
-      >
-        {props.buttonText}
-      </Button>
+    <Link href={href} underline="none">
+      <Button {...props} />
     </Link>
+  );
+}
+
+type DialogButtonProps = {
+  onSubmit: (text: string) => void | Promise<void>;
+} & Omit<ButtonProps, 'onSubmit'>;
+function DialogButton({ onSubmit, ...props }: DialogButtonProps) {
+  const [open, setOpen] = React.useState(false);
+  const theme = useTheme();
+
+  const handleClose = () => setOpen(false);
+
+  const [loading, setLoading] = React.useState(false);
+
+  const handleSubmit = async (text: string) => {
+    setLoading(true);
+    onSubmit(text);
+    setLoading(false);
+    handleClose();
+  };
+
+  return (
+    <>
+      <Button disabled={open} onClick={_ => setOpen(!open)} {...props} />
+      <Dialog
+        fullWidth
+        open={!!open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <Formik
+          initialValues={{ text: '' }}
+          onSubmit={values => handleSubmit(values.text)}
+        >
+          {({ submitForm, values }) => (
+            <Form>
+              <DialogTitle id="alert-dialog-title">
+                Send a one-way message
+              </DialogTitle>
+              <DialogContent>
+                <FormikTextField
+                  name="text"
+                  placeholder="e.g. I found your book at the cafe on the corner and left it at the counter"
+                  fullWidth
+                  minRows={3}
+                  multiline
+                  autoFocus
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button type="button" onClick={handleClose}>
+                  Cancel
+                </Button>
+                <LoadingButton
+                  loading={loading}
+                  variant="contained"
+                  onClick={_ => submitForm()}
+                >
+                  Send
+                </LoadingButton>
+              </DialogActions>
+            </Form>
+          )}
+        </Formik>
+      </Dialog>
+    </>
   );
 }

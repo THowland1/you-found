@@ -55,15 +55,16 @@ import { Formik, Form } from 'formik';
 import FormikTextField from 'components/fields/FormikTextField';
 import { useAuthService } from 'utils/hooks/useAuthService';
 import { PhoneNumberField } from './PhoneNumberField';
+import * as NS from 'utils/next-serialise';
 
 type ServerSideProps = {
   items: IItem[];
   baseUrl: string;
 };
-const ItemsPage: NextPage<ServerSideProps> = ({
-  items: initialItems,
-  baseUrl
-}) => {
+const ItemsPage: NextPage<NS.Serialized<ServerSideProps>> = serialisedProps => {
+  const { baseUrl, items: initialItems } =
+    NS.deserialize<ServerSideProps>(serialisedProps);
+
   const theme = useTheme();
   const { user } = useAuth();
   const { linkWithPhoneNumber } = useAuthService();
@@ -326,7 +327,7 @@ const ItemsPage: NextPage<ServerSideProps> = ({
 export default ItemsPage;
 
 export const getServerSideProps: GetServerSideProps<
-  ServerSideProps
+  NS.Serialized<ServerSideProps>
 > = async ctx => {
   const baseUrl = z.string().url().parse(process.env.ORIGIN);
 
@@ -357,7 +358,7 @@ export const getServerSideProps: GetServerSideProps<
 
   if (items) {
     return {
-      props: { items, baseUrl }
+      props: NS.serialize({ items, baseUrl })
     } as const;
   } else {
     return {

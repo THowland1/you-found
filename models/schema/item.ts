@@ -4,6 +4,10 @@ import { IMongooseDocument } from '../mongoose/IMongooseDocument';
 import { IMongooseRef } from '../mongoose/IMongooseRef';
 import { SchemaNames } from '../mongoose/schema-names';
 
+const dateSchema = z.preprocess(arg => {
+  if (typeof arg == 'string' || arg instanceof Date) return new Date(arg);
+}, z.date());
+
 const IItemLinkSchema = z.object({
   showButton: z.boolean(),
   buttonText: z.string()
@@ -32,7 +36,7 @@ export const IItemEventSchema = z.discriminatedUnion('eventType', [
   }),
   z.object({
     eventType: z.literal('MessageSent'),
-    datetime: z.date(),
+    datetime: dateSchema,
     messageSentProps: z.object({
       message: z.string()
     })

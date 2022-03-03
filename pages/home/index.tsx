@@ -34,7 +34,8 @@ import {
   ListItemIcon,
   Alert,
   AlertTitle,
-  TextField
+  TextField,
+  Chip
 } from '@mui/material';
 import NextLink from 'next/link';
 import axios from 'axios';
@@ -42,7 +43,7 @@ import { Dump } from 'components/shared/Dump';
 import Shell from 'components/shared/shell';
 import { getItemsByFirebaseUserId } from 'data-layer/getItemsByFirebaseUserId';
 import { firebaseAdmin } from 'middleware/firebaseAdmin';
-import { IItem } from 'models/schema/item';
+import { IItem, IItemEvent, IItemEventSchema } from 'models/schema/item';
 import { GetServerSideProps, NextPage } from 'next';
 import nookies from 'nookies';
 import React, { useEffect, useState } from 'react';
@@ -56,14 +57,21 @@ import FormikTextField from 'components/fields/FormikTextField';
 import { useAuthService } from 'utils/hooks/useAuthService';
 import { PhoneNumberField } from './PhoneNumberField';
 import * as NS from 'utils/next-serialise';
+import { formatDistance } from 'date-fns';
+
+type ItemEvent = IItemEvent & { item: Pick<IItem, 'itemName'> };
 
 type ServerSideProps = {
   items: IItem[];
+  events: ItemEvent[];
   baseUrl: string;
 };
 const ItemsPage: NextPage<NS.Serialized<ServerSideProps>> = serialisedProps => {
-  const { baseUrl, items: initialItems } =
-    NS.deserialize<ServerSideProps>(serialisedProps);
+  const {
+    baseUrl,
+    items: initialItems,
+    events
+  } = NS.deserialize<ServerSideProps>(serialisedProps);
 
   const theme = useTheme();
   const { user } = useAuth();
@@ -316,6 +324,73 @@ const ItemsPage: NextPage<NS.Serialized<ServerSideProps>> = serialisedProps => {
                   </Stack>
                 </CardContent>
               </Card>
+              <Card>
+                <CardHeader title="Activity" />
+                <CardContent sx={{ padding: 0 }}>
+                  <List sx={{ width: '100%' }}>
+                    {events.map((itemEvent, i) => (
+                      <React.Fragment key={i}>
+                        <ListItem
+                          sx={{
+                            ':nth-child(odd)': {
+                              background: theme => theme.palette.grey[50]
+                            }
+                          }}
+                        >
+                          <ListItemText
+                            primary={
+                              <Stack
+                                direction="row"
+                                justifyContent="space-between"
+                              >
+                                <Typography variant="body1">
+                                  Anonymous{' '}
+                                  {
+                                    {
+                                      Visited: 'visited',
+                                      MessageSent: 'sent a message'
+                                    }[itemEvent.eventType]
+                                  }{' '}
+                                  <Box
+                                    sx={{
+                                      display: 'inline',
+                                      fontSize: 'small',
+                                      opacity: 0.5
+                                    }}
+                                  >
+                                    ({itemEvent.item.itemName})
+                                  </Box>
+                                </Typography>
+                                <Typography
+                                  variant="body1"
+                                  fontSize="small"
+                                  sx={{ opacity: 0.5 }}
+                                >
+                                  {formatDistance(
+                                    new Date(itemEvent.datetime),
+                                    new Date(),
+                                    { addSuffix: true }
+                                  )}
+                                </Typography>
+                              </Stack>
+                            }
+                            secondary={
+                              <>
+                                {itemEvent.eventType === 'Visited' && (
+                                  <>&nbsp;</>
+                                )}
+                                {itemEvent.eventType === 'MessageSent' && (
+                                  <>"{itemEvent.messageSentProps.message}"</>
+                                )}
+                              </>
+                            }
+                          />
+                        </ListItem>
+                      </React.Fragment>
+                    ))}
+                  </List>
+                </CardContent>
+              </Card>
             </Stack>
           </Grid>
         </Grid>
@@ -356,9 +431,19 @@ export const getServerSideProps: GetServerSideProps<
 
   const items = await getItemsByFirebaseUserId(token.uid!);
 
+  const events: ItemEvent[] = [];
+  items.forEach(item => {
+    const newEvents: ItemEvent[] = item.events.map(itemEvent => ({
+      ...itemEvent,
+      item
+    }));
+    events.push(...newEvents);
+  });
+  events.sort((a, b) => b.datetime.valueOf() - a.datetime.valueOf());
+
   if (items) {
     return {
-      props: NS.serialize({ items, baseUrl })
+      props: NS.serialize({ items, baseUrl, events })
     } as const;
   } else {
     return {

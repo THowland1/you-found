@@ -1,8 +1,6 @@
 import { Box, Button, Grid, Link, TextField } from '@mui/material';
 import {
   IAuthenticationResult,
-  IAuthenticationSuccessResult,
-  ICredentials,
   useAuthService
 } from 'utils/hooks/useAuthService';
 import { Form, Formik } from 'formik';
@@ -17,7 +15,7 @@ type Callback<TArg, TResult = void> = (arg: TArg) => TResult;
 
 export const AuthPopupForm: FC<{
   isNewUserState: UseState<boolean>;
-  onAuthSuccess: Callback<IAuthenticationSuccessResult>;
+  onAuthSuccess: Callback<IAuthenticationResult & { success: true }>;
 }> = ({ isNewUserState, onAuthSuccess }) => {
   const [isNewUser, setIsNewUser] = isNewUserState;
 

@@ -1,14 +1,16 @@
 import firebase from 'firebase/app';
 import useFirebase from 'utils/hooks/useFirebase';
 
-type Result<TSuccess> =
-  | ({
-      success: true;
-    } & TSuccess)
-  | {
-      success: false;
-      error: Error;
-    };
+type SuccessResult<TSuccess = {}> = {
+  success: true;
+} & TSuccess;
+type ErrorResult<TError = {}> = {
+  success: false;
+  error: Error;
+} & TError;
+type Result<TSuccess = {}, TError = {}> =
+  | SuccessResult<TSuccess>
+  | ErrorResult<TError>;
 
 export type IAuthenticationResult = Result<{
   userCredential: firebase.auth.UserCredential;

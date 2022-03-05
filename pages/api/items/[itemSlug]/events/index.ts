@@ -5,6 +5,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
 import sendgrid from 'middleware/sendgrid';
 import { firebaseAdmin } from 'middleware/firebaseAdmin';
+import { renderEmailTemplate } from 'components/email-templates/EmailTemplate';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
@@ -25,12 +26,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           if (email) {
             switch (itemEvent.eventType) {
               case 'MessageSent':
+                const { html } = renderEmailTemplate({
+                  itemName: item.item.itemName,
+                  message: itemEvent.messageSentProps.message
+                });
                 await sendgrid.sendEmail({
                   to: email,
                   subject: `[${item.item.itemName}] Someone sent you a message`,
-                  html: `<strong>Someone sent a message</strong>
-                    <blockquote>${itemEvent.messageSentProps.message}</blockquote>
-                    `
+                  html
                 });
                 break;
               default:

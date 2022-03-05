@@ -1,43 +1,20 @@
-import { RemoveCircleOutline } from '@mui/icons-material';
-import {
-  Box,
-  Button,
-  FormControl,
-  FormHelperText,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectProps,
-  Stack,
-  Theme,
-  Typography,
-  useTheme
-} from '@mui/material';
-import FormikTextField from 'components/fields/FormikTextField';
+import { Theme, useTheme } from '@mui/material';
+import PrintForm from 'components/PrintForm';
 import Shell from 'components/shared/shell';
-import { getItemById } from 'data-layer/getItemById';
-import { FieldArray, Formik, useField } from 'formik';
+import { getItemsByFirebaseUserId } from 'data-layer/getItemsByFirebaseUserId';
+import { firebaseAdmin } from 'middleware/firebaseAdmin';
 import { IItem } from 'models/schema/item';
 import { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
-import React, { useState } from 'react';
-import ReactDOMServer from 'react-dom/server';
-import { z } from 'zod';
-import { toFormikValidationSchema } from 'zod-formik-adapter';
-import StickerSheetPreview from 'components/StickerSheetPreview';
 import nookies from 'nookies';
-import { firebaseAdmin } from 'middleware/firebaseAdmin';
-import { getItemsByFirebaseUserId } from 'data-layer/getItemsByFirebaseUserId';
-import { Dump } from 'components/shared/Dump';
-import { v4 } from 'uuid';
-import FormikSelectField from 'components/fields/FormikSelectField';
-import PrintForm from 'components/PrintForm';
+import React from 'react';
+import * as NS from 'utils/next-serialise';
+import { z } from 'zod';
 
-type ServerSideProps = { items: IItem[]; baseUrl: string };
+type ServerSideProps = NS.Serialized<{ items: IItem[]; baseUrl: string }>;
 
-const ItemEditPage: NextPage<ServerSideProps> = ({ items, baseUrl }) => {
+const ItemEditPage: NextPage<ServerSideProps> = props => {
+  const { items, baseUrl } = NS.deserialize(props);
   const theme = useTheme<Theme>();
 
   if (!items.length) {
@@ -51,7 +28,7 @@ const ItemEditPage: NextPage<ServerSideProps> = ({ items, baseUrl }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Shell>
-        <PrintForm items={items} baseUrl={baseUrl} />
+        <PrintForm items={items as IItem[]} baseUrl={baseUrl} />
       </Shell>
     </>
   );
@@ -81,14 +58,14 @@ export const getServerSideProps: GetServerSideProps<
         destination: `/auth/refresh?redirecturl=/me/print`,
         permanent: false
       }
-    } as const;
+    };
   }
   const token = tokenAttempt.token;
 
   const items = await getItemsByFirebaseUserId(token.uid!);
 
   if (items) {
-    return { props: { items, baseUrl } } as const;
+    return { props: NS.serialize({ items, baseUrl }) };
   } else {
     return {
       redirect: { destination: '404', statusCode: 301 }

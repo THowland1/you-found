@@ -1,4 +1,4 @@
-import { Close, RemoveCircleOutline } from '@mui/icons-material';
+import { Close, RemoveCircleOutline, Square } from '@mui/icons-material';
 import {
   Stack,
   Box,
@@ -26,7 +26,9 @@ import { toFormikValidationSchema } from 'zod-formik-adapter';
 const itemSchema = z.object({
   itemSlug: z.string(),
   itemName: z.string(),
-  itemHref: z.string()
+  itemHref: z.string(),
+  bgColor: z.string(),
+  fgColor: z.string()
 });
 
 const schema = z.object({
@@ -55,7 +57,9 @@ const generateInitialValues = (items: IItem[], baseUrl: string): Schema => {
       item: {
         itemSlug: item.itemSlug,
         itemName: item.itemName,
-        itemHref: `${baseUrl}/items/${item.itemSlug}`
+        itemHref: `${baseUrl}/items/${item.itemSlug}`,
+        bgColor: '#ffffff',
+        fgColor: '#000000'
       },
       width: 50,
       padding: 5
@@ -165,6 +169,24 @@ const PrintFormForm = ({
                               <InputAdornment position="end">mm</InputAdornment>
                             )
                           }}
+                        />
+                      </Stack>
+                      <Stack direction="row" gap="1rem">
+                        <FormikTextField
+                          name={`codes.${i}.item.bgColor`}
+                          size="small"
+                          label="Background"
+                          InputLabelProps={{ shrink: true }}
+                          autoComplete="off"
+                          type="color"
+                        />
+                        <FormikTextField
+                          name={`codes.${i}.item.fgColor`}
+                          size="small"
+                          label="Foreground"
+                          InputLabelProps={{ shrink: true }}
+                          autoComplete="off"
+                          type="color"
                         />
                       </Stack>
                     </React.Fragment>
